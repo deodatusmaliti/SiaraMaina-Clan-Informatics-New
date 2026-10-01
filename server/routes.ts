@@ -180,14 +180,14 @@ apiRouter.get("/sync/stream", (req: Request, res: Response) => {
   });
 });
 
-// 2. Continuous Consistency Pulse Endpoint
 apiRouter.get("/db/pulse", async (req: Request, res: Response) => {
-  await dbEngine.pullLatestFromSupabase();
   const records = dbEngine.getCollection("records") || [];
   res.json({
     success: true,
+    database: "Cloudflare D1 & Persistent Engine",
     version: dbEngine.getVersion(),
     count: records.length,
+    updatedAt: dbEngine.getLastModified(),
     lastModified: dbEngine.getLastModified(),
     clientsConnected: syncManager.getActiveClientCount(),
     timestamp: new Date().toISOString(),

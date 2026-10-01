@@ -146,6 +146,20 @@ export default {
           return jsonResponse({ success: true, count: savedCount, message: `Successfully persisted ${savedCount} members to Cloudflare D1.` }, 200, corsHeaders);
         }
 
+        if (url.pathname === "/api/db/pulse" && request.method === "GET") {
+          await env.DB.prepare(MEMBER_CREATE_SQL).run();
+          const stats = await env.DB.prepare("SELECT COUNT(*) as count, MAX(updated_at) as last_updated FROM members").first();
+          return jsonResponse({
+            success: true,
+            database: "Cloudflare D1 (siaramaina-db)",
+            engine: "Cloudflare D1 SQLite Edge Engine",
+            count: stats ? (stats.count || 0) : 0,
+            updatedAt: stats ? (stats.last_updated || "") : "",
+            lastModified: stats ? (stats.last_updated || "") : "",
+            pulseTime: Date.now()
+          }, 200, corsHeaders);
+        }
+
         if (url.pathname === "/api/db/collections/records" && request.method === "GET") {
           const results = await env.DB.prepare("SELECT * FROM members ORDER BY created_at DESC").all();
           const REVERSE_MAP = {};
@@ -167,7 +181,13 @@ export default {
             obj.id = row.record_id || String(row.id);
             return obj;
           });
-          return jsonResponse(formatted, 200, corsHeaders);
+          return jsonResponse({
+            success: true,
+            database: "Cloudflare D1",
+            count: formatted.length,
+            data: formatted,
+            records: formatted
+          }, 200, corsHeaders);
         }
 
         if (url.pathname === "/api/members" && request.method === "POST") {

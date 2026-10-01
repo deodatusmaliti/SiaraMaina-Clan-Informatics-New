@@ -7150,6 +7150,15 @@ SiaraMaina Clan Council & Administration`;
         if (window.autoSyncAll) {
           window.autoSyncAll();
         }
+
+        if (typeof BroadcastChannel !== "undefined") {
+          try {
+            if (!window._clanBroadcastChannel) {
+              window._clanBroadcastChannel = new BroadcastChannel("siara_d1_sync");
+            }
+            window._clanBroadcastChannel.postMessage({ type: "RECORDS_CHANGED", records: records, timestamp: Date.now() });
+          } catch(bcErr) {}
+        }
       } catch (error) {
         alert("Browser storage is unavailable. Use Save Project Data to create a project backup.");
       }
@@ -7177,8 +7186,18 @@ SiaraMaina Clan Council & Administration`;
             var res = await fetch(getBackendApiUrl("/api/db/collections/records"));
             if (res.ok) {
               var json = await res.json();
-              recDocs = json.data || [];
+              recDocs = Array.isArray(json) ? json : (json.data || json.records || json.members || []);
             }
+          }
+
+          if (!recDocs || recDocs.length === 0) {
+            try {
+              var mRes = await fetch(getBackendApiUrl("/api/members"));
+              if (mRes.ok) {
+                var mJson = await mRes.json();
+                recDocs = Array.isArray(mJson) ? mJson : (mJson.records || mJson.members || mJson.data || []);
+              }
+            } catch(e) {}
           }
 
           if (Array.isArray(recDocs) && recDocs.length > 0) {
@@ -15566,7 +15585,7 @@ document.getElementById("printModal").classList.add("open");
           try {
             var res = await fetch(getBackendApiUrl("/api/db/collections/" + encodeURIComponent(col)), { headers: api.getHeaders() });
             var d = await res.json();
-            return d.data || [];
+            return Array.isArray(d) ? d : (d.data || d.records || d.members || []);
           } catch (err) {
             console.warn("[InBuiltBackend] getCollection error:", err);
             return [];
@@ -15756,38 +15775,50 @@ document.getElementById("printModal").classList.add("open");
 
                 console.log(`[SupabaseRealtime] Attempting automatic reconnection in ${delay}ms (Attempt #${this.reconnectAttempts})...`);
                 
-                this.reconnectTimeout = setTimeout(() => {
-                  this.connect();
-                }, delay);
+              start() {
+                console.log("[RealtimeSync] Initializing dedicated D1 cloud real-time subscription manager...");
+                this.connect();
+                this.startHeartbeat();
+                this.startPollingFallback();
               }
 
               startPollingFallback() {
                 if (this.pollingInterval) clearInterval(this.pollingInterval);
+                this.lastKnownPulseTime = "";
                 this.pollingInterval = setInterval(async () => {
                   try {
                     var res = await fetch(getBackendApiUrl("/api/db/pulse"));
+                    if (!res.ok) return;
                     var pulse = await res.json();
                     
-                    var remoteCount = pulse.count || 0;
-                    if (remoteCount !== this.lastKnownPulseCount && this.lastKnownPulseCount !== 0) {
-                      console.log(`[SupabaseRealtime] Fallback channel detected remote state modification. Triggering full synchronization...`);
+                    var remoteCount = Number(pulse.count || 0);
+                    var remoteModified = String(pulse.updatedAt || pulse.lastModified || pulse.version || "");
+                    
+                    var countChanged = (this.lastKnownPulseCount !== 0 && remoteCount !== this.lastKnownPulseCount);
+                    var modChanged = (this.lastKnownModified && remoteModified && remoteModified !== this.lastKnownModified);
+
+                    if (countChanged || modChanged) {
+                      console.log(`[RealtimeSync] Cloudflare D1 database state modification detected (Count: ${remoteCount}, Modified: ${remoteModified}). Triggering authoritative synchronization...`);
                       
-                      // Fetch absolute authoritative state
                       var recordsRes = await fetch(getBackendApiUrl("/api/db/collections/records"));
-                      var freshRecords = await recordsRes.json();
-                      if (Array.isArray(freshRecords)) {
-                        records = freshRecords;
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-                        if (typeof refreshActiveClanViews === "function") {
-                          refreshActiveClanViews(false);
+                      if (recordsRes.ok) {
+                        var freshJson = await recordsRes.json();
+                        var freshRecords = Array.isArray(freshJson) ? freshJson : (freshJson.data || freshJson.records || freshJson.members || []);
+                        if (Array.isArray(freshRecords) && freshRecords.length > 0) {
+                          records = freshRecords;
+                          localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+                          if (typeof refreshActiveClanViews === "function") {
+                            refreshActiveClanViews(false);
+                          }
                         }
                       }
                     }
                     this.lastKnownPulseCount = remoteCount;
+                    if (remoteModified) this.lastKnownModified = remoteModified;
                   } catch (e) {
-                    console.warn("[SupabaseRealtime] Fallback channel poll warning:", e);
+                    // Silent retry on transient connection drops
                   }
-                }, 4000);
+                }, 3000);
               }
             }
             window.supabaseRealtimeManager = new SupabaseRealtimeManager();
@@ -15805,6 +15836,22 @@ document.getElementById("printModal").classList.add("open");
         api.initRealtimeStream();
         if (typeof loadInbuiltBackendData === "function") loadInbuiltBackendData();
       });
+
+      if (typeof BroadcastChannel !== "undefined") {
+        try {
+          var _localSyncBc = new BroadcastChannel("siara_d1_sync");
+          _localSyncBc.onmessage = function(ev) {
+            if (ev.data && ev.data.type === "RECORDS_CHANGED" && Array.isArray(ev.data.records)) {
+              console.log("[BroadcastChannel] ⚡ Instant sync from local browser tab.");
+              records = ev.data.records;
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+              if (typeof refreshActiveClanViews === "function") {
+                refreshActiveClanViews(false);
+              }
+            }
+          };
+        } catch(e) {}
+      }
 
       // Helper to update active sync nodes indicators across UI
       function updateSyncNodesDisplay(nodesCount, pingTime) {
