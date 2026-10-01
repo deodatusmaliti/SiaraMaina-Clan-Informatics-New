@@ -1906,6 +1906,9 @@
           <button class="button primary" type="button" onclick="setUmTab('provision')" style="padding:7px 12px; font-size:0.75rem; white-space:nowrap; margin-left:auto;">
             ➕ Add Member
           </button>
+          <button id="syncMembersToDatabaseButton" class="button secondary" type="button" onclick="syncMembersToDatabase()" style="padding:7px 12px; font-size:0.75rem; white-space:nowrap;">
+            Sync to Database
+          </button>
         </div>
 
         <!-- Mass Outreach & Role Actions Bar -->
@@ -3019,6 +3022,132 @@ CREATE POLICY "Allow all actions" ON public.audit_logs FOR ALL USING (true) WITH
         }, function(err) {
           console.error("Live user list listening failed:", err);
         });
+      }
+    }
+
+    async function syncMembersToDatabase() {
+      if (!requirePermission("manageUsers", "You do not have permission to migrate clan members.")) return;
+      var button = document.getElementById("syncMembersToDatabaseButton");
+      if (button && button.disabled) return;
+      if (!auth.currentUser) {
+        alert("Firebase sign-in is required to sync members.");
+        return;
+      }
+
+      var originalLabel = button ? button.textContent : "Sync to Database";
+      if (button) {
+        button.disabled = true;
+        button.textContent = "Checking database...";
+      }
+
+      try {
+        var token = await auth.currentUser.getIdToken();
+        var existingResponse = await fetch(getBackendApiUrl("/api/members"), {
+          headers: { "Authorization": "Bearer " + token }
+        });
+        var existingData = await safeParseJson(existingResponse);
+        if (!existingResponse.ok) {
+          throw new Error(existingData.error || "Could not check the existing database members.");
+        }
+
+        var existingMembers = Array.isArray(existingData.members) ? existingData.members : [];
+        var existingNumbers = new Set(existingMembers.map(function(member) {
+          return String(member.clan_member_number || member.clanMemberNumber || "");
+        }).filter(Boolean));
+        var existingRecordIds = new Set(existingMembers.map(function(member) {
+          return String(member.record_id || member.recordId || "");
+        }).filter(Boolean));
+        var sourceMembers = Array.isArray(records) ? records : [];
+        var added = 0;
+        var skipped = 0;
+        var failed = [];
+
+        for (var index = 0; index < sourceMembers.length; index++) {
+          var source = sourceMembers[index];
+          var memberNumber = source.clanMemberNumber || clanMemberNumber(source);
+          var recordId = source.recordId || source.id || "";
+          var numberKey = String(memberNumber || "");
+          var recordIdKey = String(recordId);
+
+          if ((numberKey && existingNumbers.has(numberKey)) || (recordIdKey && existingRecordIds.has(recordIdKey))) {
+            skipped++;
+            continue;
+          }
+
+          var payload = {
+            clanMemberNumber: memberNumber,
+            firstName: source.firstName || "",
+            middleName: source.middleName || "",
+            lastName: source.lastName || "",
+            sex: source.sex || "",
+            branchType: source.branchType || "",
+            honorific: source.honorific || "",
+            dob: source.dob || "",
+            placeOfBirth: source.placeOfBirth || "",
+            birthPeriod: source.birthPeriod || "",
+            deceased: String(source.deceased === true || source.deceased === "true"),
+            dod: source.dod || "",
+            ageCategory: source.ageCategory || ageCategory(source),
+            deathAge: source.deathAge == null ? "" : source.deathAge,
+            causeOfDeath: source.causeOfDeath || "",
+            fatherId: source.fatherId || "",
+            motherId: source.motherId || "",
+            spouseId: source.spouseId || "",
+            siblingIds: JSON.stringify(Array.isArray(source.siblingIds) ? source.siblingIds : []),
+            maritalStatus: source.maritalStatus || "",
+            education: source.education || "",
+            course: source.course || "",
+            employment: source.employment || "",
+            occupation: source.occupation || "",
+            organization: source.organization || "",
+            religion: source.religion || "",
+            denomination: source.denomination || "",
+            phone: source.phone || "",
+            whatsapp: source.whatsapp || "",
+            email: source.email || "",
+            location: source.location || "",
+            photoFile: source.photoFile || "",
+            narrative: source.narrative || "",
+            recordId: recordId,
+            storedPhoto: source.storedPhoto || source.photo || ""
+          };
+
+          try {
+            if (!payload.firstName || payload.lastName === undefined) {
+              throw new Error("firstName and lastName are required");
+            }
+            var response = await fetch(getBackendApiUrl("/api/members"), {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+              },
+              body: JSON.stringify(payload)
+            });
+            var result = await safeParseJson(response);
+            if (!response.ok || !result.success) {
+              throw new Error(result.error || result.message || "The API rejected this member.");
+            }
+            if (numberKey) existingNumbers.add(numberKey);
+            if (recordIdKey) existingRecordIds.add(recordIdKey);
+            added++;
+          } catch (error) {
+            failed.push((source.firstName + " " + source.lastName).trim() + ": " + error.message);
+          }
+
+          if (button) button.textContent = "Syncing " + (index + 1) + "/" + sourceMembers.length + "...";
+        }
+
+        var summary = "Member sync complete. Added: " + added + ", skipped: " + skipped + ", failed: " + failed.length + ".";
+        if (failed.length) summary += "\n\n" + failed.slice(0, 5).join("\n");
+        alert(summary);
+      } catch (error) {
+        alert("Member sync failed: " + error.message);
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.textContent = originalLabel;
+        }
       }
     }
 

@@ -98,13 +98,13 @@ export default {
 
         if (url.pathname === "/api/members" && request.method === "POST") {
           const body = await request.json();
-          if (!body.firstName || !body.lastName) {
+          if (!body.firstName || body.lastName === undefined || body.lastName === null) {
             return jsonResponse({ error: "firstName and lastName are required" }, 400, corsHeaders);
           }
           const cols = [];
           const vals = [];
           for (const [camelKey, snakeKey] of Object.entries(FIELD_MAP)) {
-            if (body[camelKey] !== undefined && body[camelKey] !== null && body[camelKey] !== "") {
+            if (body[camelKey] !== undefined && body[camelKey] !== null && (body[camelKey] !== "" || camelKey === "lastName")) {
               cols.push(snakeKey);
               vals.push(body[camelKey]);
             }
