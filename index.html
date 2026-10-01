@@ -1067,7 +1067,7 @@
           <div class="command-group"><span class="command-label">Explore</span>
             <div class="dropdown"><button class="top-button" type="button" onclick="handleCatalogueBtnClick(event)">Catalogue <span aria-hidden="true">▾</span></button><div id="catalogueMenu" class="dropdown-menu"><button type="button" onclick="navigateCatalogue('all')">All Members</button><button type="button" onclick="navigateCatalogue('living')">Living Members</button><button type="button" onclick="navigateCatalogue('deceased')">Deceased Members</button><button type="button" onclick="navigateCatalogue('heritage')">Foundational Ancestry</button><button type="button" onclick="navigateCatalogue('siara')">Siara Branch</button><button type="button" onclick="navigateCatalogue('maina')">Maina Branch</button><button type="button" onclick="navigateCatalogue('maliti')">Maliti Family</button><button type="button" onclick="openCustomSearch()">Custom Search</button></div></div>
             <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('treeMenu')">Family Tree <span aria-hidden="true">▾</span></button><div id="treeMenu" class="dropdown-menu"><button type="button" onclick="showTree('clan', '', 'd3')">🌳 Interactive D3 Tree</button><button type="button" onclick="showTree('clan', '', 'treemap')">🗺️ Genealogical Treemap</button><button type="button" onclick="showTree('clan', '', 'classical')">📜 Classical Family Tree</button><button type="button" onclick="showTree('siara')">🌿 Siara Branch</button><button type="button" onclick="showTree('maina')">🍂 Maina Branch</button><button type="button" onclick="showTree('maliti')">🏛️ Maliti Family</button><button type="button" onclick="openCustomTree()">🔍 Custom View</button></div></div>
-            <button class="top-button" type="button" onclick="openCustomFilter()">Filter</button><button class="top-button" type="button" onclick="showStatistics()">Statistics</button><button class="top-button" type="button" onclick="showMap()">Geographical Map</button>
+            <button class="top-button" type="button" onclick="openCustomFilter()">Filter</button><button class="top-button" type="button" onclick="showStatistics()">Statistics</button><button class="top-button" type="button" onclick="showMap()">Geographical Map</button><button class="top-button" type="button" onclick="showContactForms()">Contact</button>
           </div>
           <div class="command-group"><span class="command-label">Tools</span>
             <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('viewMenu')">View <span aria-hidden="true">▾</span></button><div id="viewMenu" class="dropdown-menu"><button type="button" onclick="setViewStyle('card')">Card View</button><button type="button" onclick="setViewStyle('line')">Line View</button><button type="button" onclick="showGrowthDashboard()">📈 Clan Growth Analytics</button><button type="button" onclick="showMap()">Geographical Map</button><button id="spouseToggle" type="button" onclick="toggleSpouses()">Hide Spouses</button></div></div>
@@ -1249,6 +1249,32 @@
       </section>
 
       <section id="catalogueWorkspace"></section>
+
+      <section id="contactFormsSection" aria-labelledby="contactFormsHeading" style="margin:24px 0;padding:22px;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 4px 16px rgba(4,31,20,0.06);">
+        <div style="margin-bottom:18px;">
+          <span class="eyebrow">Community</span>
+          <h2 id="contactFormsHeading" style="margin:4px 0;color:var(--forest);">Stay in touch</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:24px;">
+          <form id="contactForm" style="display:flex;flex-direction:column;gap:12px;">
+            <h3 style="margin:0;color:var(--forest);">Send a message</h3>
+            <label for="contactName" style="font-weight:700;color:var(--forest);">Name</label>
+            <input id="contactName" name="name" type="text" autocomplete="name" required style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;">
+            <label for="contactEmail" style="font-weight:700;color:var(--forest);">Email</label>
+            <input id="contactEmail" name="email" type="email" autocomplete="email" required style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;">
+            <label for="contactMessage" style="font-weight:700;color:var(--forest);">Message</label>
+            <textarea id="contactMessage" name="message" rows="5" required style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;resize:vertical;"></textarea>
+            <button class="button primary" type="submit" style="align-self:flex-start;">Send Message</button>
+          </form>
+          <form id="newsletterForm" style="display:flex;flex-direction:column;align-items:flex-start;gap:12px;">
+            <h3 style="margin:0;color:var(--forest);">Newsletter</h3>
+            <p style="margin:0;color:var(--muted);">Receive occasional updates from the SiaraMaina Clan community.</p>
+            <label for="newsletterEmail" style="font-weight:700;color:var(--forest);">Email</label>
+            <input id="newsletterEmail" name="email" type="email" autocomplete="email" required style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;">
+            <button class="button secondary" type="submit">Subscribe</button>
+          </form>
+        </div>
+      </section>
     </section>
 
     <section id="treePage" class="page">
@@ -8066,6 +8092,11 @@ showCatalogue(currentFilter);
       if (value("denomination") && (record.denomination || "Not Recorded") !== value("denomination")) return false;
       if (value("branch") && record.branchType !== value("branch")) return false;
       return true;
+    }
+
+    function showContactForms() {
+      showCatalogue("all");
+      document.getElementById("contactFormsSection").scrollIntoView({ behavior: "smooth" });
     }
 
     function showCatalogue(filter) {
@@ -16507,6 +16538,62 @@ document.getElementById("printModal").classList.add("open");
     if (window.backendApi && typeof window.backendApi.initRealtimeStream === "function") {
       window.backendApi.initRealtimeStream();
     }
+  });
+</script>
+
+<script type="module">
+  import { submitContact, subscribeNewsletter, trackVisitor } from './src/api.js';
+
+  document.getElementById('contactForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const form = event.target;
+    const button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    button.textContent = 'Sending...';
+    try {
+      const result = await submitContact(
+        form.elements.namedItem('name').value,
+        form.elements.namedItem('email').value,
+        form.elements.namedItem('message').value
+      );
+      if (result.success) {
+        form.reset();
+        alert('Thank you! Your message has been sent.');
+      } else {
+        alert('Error: ' + (result.error || 'Something went wrong'));
+      }
+    } catch (error) {
+      alert('Network error. Please try again.');
+    } finally {
+      button.disabled = false;
+      button.textContent = 'Send Message';
+    }
+  });
+
+  document.getElementById('newsletterForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const form = event.target;
+    const button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    button.textContent = 'Subscribing...';
+    try {
+      const result = await subscribeNewsletter(form.elements.namedItem('email').value);
+      if (result.success) {
+        form.reset();
+        alert('Subscribed successfully!');
+      } else {
+        alert(result.error || 'Something went wrong');
+      }
+    } catch (error) {
+      alert('Network error. Please try again.');
+    } finally {
+      button.disabled = false;
+      button.textContent = 'Subscribe';
+    }
+  });
+
+  trackVisitor(window.location.pathname).catch(function(error) {
+    console.warn('Visitor tracking failed:', error);
   });
 </script>
 
