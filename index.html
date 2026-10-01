@@ -2627,6 +2627,10 @@ CREATE POLICY "Allow all actions" ON public.audit_logs FOR ALL USING (true) WITH
         return "https://siaramaina-clan-informatics-new.ai.studio";
       }
 
+      if (host === "siaramaina.researchlinktz.com" || host.endsWith(".researchlinktz.com")) {
+        return "";
+      }
+
       // If running on a native container domain (like .ai.studio or .run.app or port 3000)
       if (host && (host.includes("ai.studio") || host.includes("run.app") || host === "localhost" || host === "127.0.0.1")) {
         return "";
