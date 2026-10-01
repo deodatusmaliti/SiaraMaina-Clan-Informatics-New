@@ -2613,22 +2613,22 @@ CREATE POLICY "Allow all actions" ON public.audit_logs FOR ALL USING (true) WITH
     // IN-BUILT CLOUD SERVER RESOLVER (Supports Localhost, AI Studio, & GitHub Pages)
     // =========================================================================
     function getBackendBaseUrl() {
+      var host = window.location.hostname;
+      if (host === "siaramaina.researchlinktz.com" || host.endsWith(".researchlinktz.com")) {
+        return "";
+      }
+
       try {
         var customUrl = localStorage.getItem("clan_custom_backend_url");
         if (customUrl && customUrl.trim()) return customUrl.trim().replace(/\/$/, "");
       } catch (e) {}
 
-      var host = window.location.hostname;
       var protocol = window.location.protocol;
       var port = window.location.port;
 
       // If running under file: protocol, or from a local live-reload utility on a different port (e.g., Live Server on 5500 or Vite on 5173)
       if (protocol === "file:" || ((host === "localhost" || host === "127.0.0.1") && port !== "3000")) {
         return "https://siaramaina-clan-informatics-new.ai.studio";
-      }
-
-      if (host === "siaramaina.researchlinktz.com" || host.endsWith(".researchlinktz.com")) {
-        return "";
       }
 
       // If running on a native container domain (like .ai.studio or .run.app or port 3000)
