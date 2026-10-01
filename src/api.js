@@ -1,4 +1,14 @@
+import { auth } from './firebase.js';
+
 const API_BASE = '';
+
+async function adminHeaders() {
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error('Administrator sign-in required');
+  }
+  return { Authorization: `Bearer ${await user.getIdToken()}` };
+}
 
 export async function submitContact(name, email, message) {
   const res = await fetch(`${API_BASE}/api/contact`, {
@@ -10,7 +20,7 @@ export async function submitContact(name, email, message) {
 }
 
 export async function getContacts() {
-  const res = await fetch(`${API_BASE}/api/contact`);
+  const res = await fetch(`${API_BASE}/api/contact`, { headers: await adminHeaders() });
   return res.json();
 }
 
@@ -24,14 +34,14 @@ export async function subscribeNewsletter(email) {
 }
 
 export async function getStats() {
-  const res = await fetch(`${API_BASE}/api/stats`);
+  const res = await fetch(`${API_BASE}/api/stats`, { headers: await adminHeaders() });
   return res.json();
 }
 
 export async function saveContent(key, value) {
   const res = await fetch(`${API_BASE}/api/content`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...await adminHeaders() },
     body: JSON.stringify({ key, value }),
   });
   return res.json();
