@@ -1,6 +1,7 @@
 {
   "name": "siaramaina-clan-informatics-new1",
   "main": "src/worker.js",
+  "workers_dev": true,
   "compatibility_date": "2026-09-17",
   "assets": {
     "directory": "./dist",
