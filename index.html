@@ -15645,9 +15645,10 @@ document.getElementById("printModal").classList.add("open");
               }
 
               start() {
-                console.log("[SupabaseRealtime] Initializing dedicated real-time subscription manager...");
+                console.log("[RealtimeSync] Initializing dedicated D1 cloud real-time subscription manager...");
                 this.connect();
                 this.startHeartbeat();
+                this.startPollingFallback();
               }
 
               connect() {
@@ -15773,13 +15774,11 @@ document.getElementById("printModal").classList.add("open");
                   this.startPollingFallback();
                 }
 
-                console.log(`[SupabaseRealtime] Attempting automatic reconnection in ${delay}ms (Attempt #${this.reconnectAttempts})...`);
+                console.log(`[RealtimeSync] Attempting automatic reconnection in ${delay}ms (Attempt #${this.reconnectAttempts})...`);
                 
-              start() {
-                console.log("[RealtimeSync] Initializing dedicated D1 cloud real-time subscription manager...");
-                this.connect();
-                this.startHeartbeat();
-                this.startPollingFallback();
+                this.reconnectTimeout = setTimeout(() => {
+                  this.connect();
+                }, delay);
               }
 
               startPollingFallback() {

@@ -55,9 +55,10 @@ export async function getStats() {
 }
 
 export async function saveContent(key, value) {
+  const authHdr = await adminHeaders();
   const res = await fetch(`${API_BASE}/api/content`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...await adminHeaders() },
+    headers: { 'Content-Type': 'application/json', ...authHdr },
     body: JSON.stringify({ key, value }),
   });
   return res.json();
