@@ -11071,7 +11071,7 @@ updateAgeFields();
       `;
     }
 
-    function saveProfile(event) {
+    async function saveProfile(event) {
       event.preventDefault();
 
       var editingExisting = !!document.getElementById("recordId").value;
@@ -11115,6 +11115,69 @@ updateAgeFields();
       };
 
       record.deathAge = ageAtDeath(record);
+
+      if (!editingExisting) {
+        try {
+          if (!auth.currentUser) throw new Error("Firebase sign-in is required to add a member.");
+          var token = await auth.currentUser.getIdToken();
+          var formData = {
+            clanMemberNumber: document.getElementById("clanMemberNumber").value,
+            firstName: document.getElementById("firstName").value,
+            middleName: document.getElementById("middleName").value,
+            lastName: document.getElementById("lastName").value,
+            sex: document.getElementById("sex").value,
+            branchType: document.getElementById("branchType").value,
+            honorific: document.getElementById("honorific").value,
+            dob: document.getElementById("dob").value,
+            placeOfBirth: document.getElementById("placeOfBirth").value,
+            birthPeriod: document.getElementById("birthPeriod").value,
+            deceased: document.getElementById("deceased").value,
+            dod: document.getElementById("dod").value,
+            ageCategory: document.getElementById("ageCategory").value,
+            deathAge: document.getElementById("deathAge").value,
+            causeOfDeath: document.getElementById("causeOfDeath").value,
+            fatherId: document.getElementById("fatherId").value,
+            motherId: document.getElementById("motherId").value,
+            spouseId: document.getElementById("spouseId").value,
+            siblingIds: document.getElementById("siblingIds").value,
+            maritalStatus: document.getElementById("maritalStatus").value,
+            education: document.getElementById("education").value,
+            course: document.getElementById("course").value,
+            employment: document.getElementById("employment").value,
+            occupation: document.getElementById("occupation").value,
+            organization: document.getElementById("organization").value,
+            religion: document.getElementById("religion").value,
+            denomination: document.getElementById("denomination").value,
+            phone: document.getElementById("phone").value,
+            whatsapp: document.getElementById("whatsapp").value,
+            email: document.getElementById("email").value,
+            location: document.getElementById("location").value,
+            photoFile: document.getElementById("photoFile").value,
+            narrative: document.getElementById("narrative").value,
+            recordId: document.getElementById("recordId").value,
+            storedPhoto: document.getElementById("storedPhoto").value
+          };
+          var response = await fetch(getBackendApiUrl("/api/members"), {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify(formData)
+          });
+          var result = await safeParseJson(response);
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || result.error || "The Members API could not add this member.");
+          }
+          var createdMember = result.member || (result.data && (result.data.member || result.data)) || {};
+          id = createdMember.id || createdMember.recordId || result.memberId || result.id || id;
+          record.id = id;
+          alert("Member added successfully!");
+        } catch (error) {
+          alert("Could not add member: " + error.message);
+          return;
+        }
+      }
 
       var selectedSibling = findRecord(record.siblingIds[0]);
       if (selectedSibling) {
@@ -11167,7 +11230,7 @@ updateAgeFields();
       showCatalogue("all");
     }
 
-    function deleteProfile() {
+    async function deleteProfile() {
       if (!requirePermission("deleteMember", "You do not have permission to delete a clan profile.")) return;
       var id = document.getElementById("recordId").value;
       var record = findRecord(id);
@@ -11175,6 +11238,22 @@ updateAgeFields();
       if (!record) return;
 
       if (!confirm("Delete " + fullName(record) + "?")) return;
+
+      try {
+        if (!auth.currentUser) throw new Error("Firebase sign-in is required to delete a member.");
+        var token = await auth.currentUser.getIdToken();
+        var response = await fetch(getBackendApiUrl("/api/members") + "?id=" + encodeURIComponent(id), {
+          method: "DELETE",
+          headers: { "Authorization": "Bearer " + token }
+        });
+        if (!response.ok) {
+          var result = await safeParseJson(response);
+          throw new Error(result.message || result.error || "The Members API could not delete this member.");
+        }
+      } catch (error) {
+        alert("Could not delete member: " + error.message);
+        return;
+      }
 
       records = records.filter(function(item) {
         return item.id !== id;
