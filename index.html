@@ -2614,10 +2614,6 @@ CREATE POLICY "Allow all actions" ON public.audit_logs FOR ALL USING (true) WITH
     // =========================================================================
     function getBackendBaseUrl() {
       var host = window.location.hostname;
-      if (host === "siaramaina.researchlinktz.com" || host.endsWith(".researchlinktz.com")) {
-        return "";
-      }
-
       try {
         var customUrl = localStorage.getItem("clan_custom_backend_url");
         if (customUrl && customUrl.trim()) return customUrl.trim().replace(/\/$/, "");
@@ -2651,8 +2647,13 @@ CREATE POLICY "Allow all actions" ON public.audit_logs FOR ALL USING (true) WITH
     }
 
     function getBackendApiUrl(path) {
-      var base = getBackendBaseUrl();
       var normalizedPath = (path || "").startsWith("/") ? path : ("/" + (path || ""));
+      var host = window.location.hostname;
+      if ((host === "siaramaina.researchlinktz.com" || host.endsWith(".researchlinktz.com")) && normalizedPath.startsWith("/api/members")) {
+        return normalizedPath;
+      }
+
+      var base = getBackendBaseUrl();
       return base ? (base + normalizedPath) : normalizedPath;
     }
     window.getBackendBaseUrl = getBackendBaseUrl;
