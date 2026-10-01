@@ -4,6 +4,64 @@ const FIREBASE_JWKS_URL = "https://www.googleapis.com/service_accounts/v1/jwk/se
 let firebaseJwks;
 let firebaseJwksExpiresAt = 0;
 
+const MEMBER_CREATE_SQL = `CREATE TABLE IF NOT EXISTS members (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  clan_member_number TEXT,
+  first_name TEXT NOT NULL,
+  middle_name TEXT,
+  last_name TEXT NOT NULL,
+  sex TEXT,
+  branch_type TEXT,
+  honorific TEXT,
+  dob TEXT,
+  place_of_birth TEXT,
+  birth_period TEXT,
+  deceased TEXT,
+  dod TEXT,
+  age_category TEXT,
+  death_age INTEGER,
+  cause_of_death TEXT,
+  father_id INTEGER,
+  mother_id INTEGER,
+  spouse_id INTEGER,
+  sibling_ids TEXT,
+  marital_status TEXT,
+  education TEXT,
+  course TEXT,
+  employment TEXT,
+  occupation TEXT,
+  organization TEXT,
+  religion TEXT,
+  denomination TEXT,
+  phone TEXT,
+  whatsapp TEXT,
+  email TEXT,
+  location TEXT,
+  photo_file TEXT,
+  narrative TEXT,
+  record_id TEXT,
+  stored_photo TEXT,
+  created_at TEXT DEFAULT (datetime('now')),
+  updated_at TEXT DEFAULT (datetime('now'))
+)`;
+
+const FIELD_MAP = {
+  clanMemberNumber: "clan_member_number", firstName: "first_name",
+  middleName: "middle_name", lastName: "last_name", sex: "sex",
+  branchType: "branch_type", honorific: "honorific", dob: "dob",
+  placeOfBirth: "place_of_birth", birthPeriod: "birth_period",
+  deceased: "deceased", dod: "dod", ageCategory: "age_category",
+  deathAge: "death_age", causeOfDeath: "cause_of_death",
+  fatherId: "father_id", motherId: "mother_id", spouseId: "spouse_id",
+  siblingIds: "sibling_ids", maritalStatus: "marital_status",
+  education: "education", course: "course", employment: "employment",
+  occupation: "occupation", organization: "organization",
+  religion: "religion", denomination: "denomination",
+  phone: "phone", whatsapp: "whatsapp", email: "email",
+  location: "location", photoFile: "photo_file",
+  narrative: "narrative", recordId: "record_id", storedPhoto: "stored_photo"
+};
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -25,11 +83,72 @@ export default {
           (url.pathname === "/api/content" && request.method === "POST") ||
           (url.pathname === "/api/content" && request.method === "GET" && !url.searchParams.get("key")) ||
           (url.pathname === "/api/visitors" && request.method === "GET") ||
-          (url.pathname === "/api/stats" && request.method === "GET");
+          (url.pathname === "/api/stats" && request.method === "GET") ||
+          (url.pathname === "/api/members" && request.method === "GET") ||
+          (url.pathname === "/api/members" && request.method === "DELETE");
 
         if (requiresAdmin) {
           const authError = await authorizeAdmin(request, corsHeaders);
           if (authError) return authError;
+        }
+
+        if (url.pathname.startsWith("/api/members")) {
+          await env.DB.prepare(MEMBER_CREATE_SQL).run();
+        }
+
+        if (url.pathname === "/api/members" && request.method === "POST") {
+          const body = await request.json();
+          if (!body.firstName || !body.lastName) {
+            return jsonResponse({ error: "firstName and lastName are required" }, 400, corsHeaders);
+          }
+          const cols = [];
+          const vals = [];
+          for (const [camelKey, snakeKey] of Object.entries(FIELD_MAP)) {
+            if (body[camelKey] !== undefined && body[camelKey] !== null && body[camelKey] !== "") {
+              cols.push(snakeKey);
+              vals.push(body[camelKey]);
+            }
+          }
+          const placeholders = cols.map(() => "?").join(", ");
+          const result = await env.DB.prepare(
+            "INSERT INTO members (" + cols.join(", ") + ") VALUES (" + placeholders + ")"
+          ).bind(...vals).run();
+          return jsonResponse({ success: true, message: "Member added", id: result.meta.last_row_id }, 200, corsHeaders);
+        }
+
+        if (url.pathname === "/api/members" && request.method === "GET") {
+          const results = await env.DB.prepare("SELECT * FROM members ORDER BY created_at DESC").all();
+          return jsonResponse({ members: results.results, count: results.results.length }, 200, corsHeaders);
+        }
+
+        if (url.pathname === "/api/members" && request.method === "DELETE") {
+          const id = url.searchParams.get("id");
+          if (!id) {
+            return jsonResponse({ error: "id parameter is required" }, 400, corsHeaders);
+          }
+          await env.DB.prepare("DELETE FROM members WHERE id = ?").bind(id).run();
+          return jsonResponse({ success: true, message: "Member deleted" }, 200, corsHeaders);
+        }
+
+        if (url.pathname === "/api/members" && request.method === "PUT") {
+          const body = await request.json();
+          if (!body.id) {
+            return jsonResponse({ error: "id is required" }, 400, corsHeaders);
+          }
+          const setClauses = [];
+          const vals = [];
+          for (const [camelKey, snakeKey] of Object.entries(FIELD_MAP)) {
+            if (body[camelKey] !== undefined) {
+              setClauses.push(snakeKey + " = ?");
+              vals.push(body[camelKey]);
+            }
+          }
+          setClauses.push("updated_at = datetime('now')");
+          vals.push(body.id);
+          await env.DB.prepare(
+            "UPDATE members SET " + setClauses.join(", ") + " WHERE id = ?"
+          ).bind(...vals).run();
+          return jsonResponse({ success: true, message: "Member updated" }, 200, corsHeaders);
         }
 
         if (url.pathname === "/api/contact" && request.method === "POST") {
@@ -101,10 +220,12 @@ export default {
         }
 
         if (url.pathname === "/api/stats" && request.method === "GET") {
+          await env.DB.prepare(MEMBER_CREATE_SQL).run();
           const contacts = await env.DB.prepare("SELECT COUNT(*) as count FROM contacts").first();
           const subscribers = await env.DB.prepare("SELECT COUNT(*) as count FROM newsletter").first();
           const visitors = await env.DB.prepare("SELECT COUNT(*) as count FROM visitors").first();
-          return jsonResponse({ contacts: contacts.count, subscribers: subscribers.count, visitors: visitors.count }, 200, corsHeaders);
+          const members = await env.DB.prepare("SELECT COUNT(*) as count FROM members").first();
+          return jsonResponse({ contacts: contacts.count, subscribers: subscribers.count, visitors: visitors.count, members: members ? members.count : 0 }, 200, corsHeaders);
         }
 
         return jsonResponse({ error: "API endpoint not found" }, 404, corsHeaders);
