@@ -11247,8 +11247,6 @@ updateAgeFields();
 
       if (!editingExisting) {
         try {
-          if (!auth.currentUser) throw new Error("Firebase sign-in is required to add a member.");
-          var token = await auth.currentUser.getIdToken();
           var formData = {
             clanMemberNumber: document.getElementById("clanMemberNumber").value,
             firstName: document.getElementById("firstName").value,
@@ -11288,10 +11286,7 @@ updateAgeFields();
           };
           var response = await fetch(getBackendApiUrl("/api/members"), {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": "Bearer " + token
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData)
           });
           var result = await safeParseJson(response);
