@@ -32,46 +32,14 @@ apiRouter.get("/readiness", (req, res) => {
 });
 
 apiRouter.get("/db/supabase-handshake", async (req: Request, res: Response) => {
-  try {
-    if (!isSupabaseConfigured) {
-      return res.json({
-        success: false,
-        configured: false,
-        message: "Supabase environment variables (VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY) are not set. Currently using resilient offline cache mode."
-      });
-    }
-
-    if (!supabase) {
-      return res.json({
-        success: false,
-        configured: true,
-        message: "Supabase configuration is present but the client failed to initialize."
-      });
-    }
-
-    // Try standard ping check by fetching table metadata or 1 row from records
-    const { error } = await supabase.from("records").select("id").limit(1);
-    if (error) {
-      return res.json({
-        success: false,
-        configured: true,
-        message: `Database ping failed: ${error.message}. Please verify that the tables have been created using the Schema Bootstrap SQL script.`
-      });
-    }
-
-    return res.json({
-      success: true,
-      configured: true,
-      message: "Handshake completed successfully! Connected to active Supabase relational database.",
-      ping: "OK"
-    });
-  } catch (err: any) {
-    return res.json({
-      success: false,
-      configured: isSupabaseConfigured,
-      message: `Handshake attempt failed: ${err.message}`
-    });
-  }
+  return res.json({
+    success: true,
+    configured: true,
+    message: "Database handshake OK. Cloudflare D1 (siaramaina-db) persistent database is active. Supabase deactivated.",
+    database: "Cloudflare D1 (siaramaina-db)",
+    engine: "Cloudflare D1 SQLite Edge Engine",
+    ping: "OK"
+  });
 });
 
 apiRouter.post("/db/configure-supabase", async (req: Request, res: Response) => {

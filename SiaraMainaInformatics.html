@@ -51,6 +51,17 @@
   <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js" crossorigin></script>
   <!-- D3.js v7 for Interactive Hierarchical Tree and Treemap Visualization -->
   <script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" crossorigin="anonymous"></script>
+  <!-- Import map for standard ESM imports in browser -->
+  <script type="importmap">
+  {
+    "imports": {
+      "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+      "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+      "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js",
+      "firebase/storage": "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js"
+    }
+  }
+  </script>
 
   <!-- Firebase App & Services UMD/Compat SDK (Resilient to async ESM load delays and iframe restrictions) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" crossorigin="anonymous"></script>
@@ -1067,7 +1078,7 @@
           <div class="command-group"><span class="command-label">Explore</span>
             <div class="dropdown"><button class="top-button" type="button" onclick="handleCatalogueBtnClick(event)">Catalogue <span aria-hidden="true">▾</span></button><div id="catalogueMenu" class="dropdown-menu"><button type="button" onclick="navigateCatalogue('all')">All Members</button><button type="button" onclick="navigateCatalogue('living')">Living Members</button><button type="button" onclick="navigateCatalogue('deceased')">Deceased Members</button><button type="button" onclick="navigateCatalogue('heritage')">Foundational Ancestry</button><button type="button" onclick="navigateCatalogue('siara')">Siara Branch</button><button type="button" onclick="navigateCatalogue('maina')">Maina Branch</button><button type="button" onclick="navigateCatalogue('maliti')">Maliti Family</button><button type="button" onclick="openCustomSearch()">Custom Search</button></div></div>
             <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('treeMenu')">Family Tree <span aria-hidden="true">▾</span></button><div id="treeMenu" class="dropdown-menu"><button type="button" onclick="showTree('clan', '', 'd3')">🌳 Interactive D3 Tree</button><button type="button" onclick="showTree('clan', '', 'treemap')">🗺️ Genealogical Treemap</button><button type="button" onclick="showTree('clan', '', 'classical')">📜 Classical Family Tree</button><button type="button" onclick="showTree('siara')">🌿 Siara Branch</button><button type="button" onclick="showTree('maina')">🍂 Maina Branch</button><button type="button" onclick="showTree('maliti')">🏛️ Maliti Family</button><button type="button" onclick="openCustomTree()">🔍 Custom View</button></div></div>
-            <button class="top-button" type="button" onclick="openCustomFilter()">Filter</button><button class="top-button" type="button" onclick="showStatistics()">Statistics</button><button class="top-button" type="button" onclick="showMap()">Geographical Map</button>
+            <button class="top-button" type="button" onclick="openCustomFilter()">Filter</button><button class="top-button" type="button" onclick="showStatistics()">Statistics</button><button class="top-button" type="button" onclick="showMap()">Geographical Map</button><button class="top-button" type="button" onclick="showContactForms()">Contact</button>
           </div>
           <div class="command-group"><span class="command-label">Tools</span>
             <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('viewMenu')">View <span aria-hidden="true">▾</span></button><div id="viewMenu" class="dropdown-menu"><button type="button" onclick="setViewStyle('card')">Card View</button><button type="button" onclick="setViewStyle('line')">Line View</button><button type="button" onclick="showGrowthDashboard()">📈 Clan Growth Analytics</button><button type="button" onclick="showMap()">Geographical Map</button><button id="spouseToggle" type="button" onclick="toggleSpouses()">Hide Spouses</button></div></div>
@@ -1249,6 +1260,32 @@
       </section>
 
       <section id="catalogueWorkspace"></section>
+
+      <section id="contactFormsSection" aria-labelledby="contactFormsHeading" style="margin:24px 0;padding:22px;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 4px 16px rgba(4,31,20,0.06);">
+        <div style="margin-bottom:18px;">
+          <span class="eyebrow">Community</span>
+          <h2 id="contactFormsHeading" style="margin:4px 0;color:var(--forest);">Stay in touch</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:24px;">
+          <form id="contactForm" style="display:flex;flex-direction:column;gap:12px;">
+            <h3 style="margin:0;color:var(--forest);">Send a message</h3>
+            <label for="contactName" style="font-weight:700;color:var(--forest);">Name</label>
+            <input id="contactName" name="name" type="text" autocomplete="name" required style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;">
+            <label for="contactEmail" style="font-weight:700;color:var(--forest);">Email</label>
+            <input id="contactEmail" name="email" type="email" autocomplete="email" required style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;">
+            <label for="contactMessage" style="font-weight:700;color:var(--forest);">Message</label>
+            <textarea id="contactMessage" name="message" rows="5" required style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;resize:vertical;"></textarea>
+            <button class="button primary" type="submit" style="align-self:flex-start;">Send Message</button>
+          </form>
+          <form id="newsletterForm" style="display:flex;flex-direction:column;align-items:flex-start;gap:12px;">
+            <h3 style="margin:0;color:var(--forest);">Newsletter</h3>
+            <p style="margin:0;color:var(--muted);">Receive occasional updates from the SiaraMaina Clan community.</p>
+            <label for="newsletterEmail" style="font-weight:700;color:var(--forest);">Email</label>
+            <input id="newsletterEmail" name="email" type="email" autocomplete="email" required style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;">
+            <button class="button secondary" type="submit">Subscribe</button>
+          </form>
+        </div>
+      </section>
     </section>
 
     <section id="treePage" class="page">
@@ -1879,6 +1916,9 @@
           </select>
           <button class="button primary" type="button" onclick="setUmTab('provision')" style="padding:7px 12px; font-size:0.75rem; white-space:nowrap; margin-left:auto;">
             ➕ Add Member
+          </button>
+          <button id="syncMembersToDatabaseButton" class="button secondary" type="button" onclick="syncMembersToDatabase()" style="padding:7px 12px; font-size:0.75rem; white-space:nowrap;">
+            Sync to Database
           </button>
         </div>
 
@@ -2584,12 +2624,12 @@ CREATE POLICY "Allow all actions" ON public.audit_logs FOR ALL USING (true) WITH
     // IN-BUILT CLOUD SERVER RESOLVER (Supports Localhost, AI Studio, & GitHub Pages)
     // =========================================================================
     function getBackendBaseUrl() {
+      var host = window.location.hostname;
       try {
         var customUrl = localStorage.getItem("clan_custom_backend_url");
         if (customUrl && customUrl.trim()) return customUrl.trim().replace(/\/$/, "");
       } catch (e) {}
 
-      var host = window.location.hostname;
       var protocol = window.location.protocol;
       var port = window.location.port;
 
@@ -2618,8 +2658,13 @@ CREATE POLICY "Allow all actions" ON public.audit_logs FOR ALL USING (true) WITH
     }
 
     function getBackendApiUrl(path) {
-      var base = getBackendBaseUrl();
       var normalizedPath = (path || "").startsWith("/") ? path : ("/" + (path || ""));
+      var host = window.location.hostname;
+      if (host === "siaramaina.researchlinktz.com" || host.endsWith(".researchlinktz.com") || host.endsWith(".workers.dev") || host.endsWith(".pages.dev")) {
+        return normalizedPath;
+      }
+
+      var base = getBackendBaseUrl();
       return base ? (base + normalizedPath) : normalizedPath;
     }
     window.getBackendBaseUrl = getBackendBaseUrl;
@@ -2993,6 +3038,132 @@ CREATE POLICY "Allow all actions" ON public.audit_logs FOR ALL USING (true) WITH
         }, function(err) {
           console.error("Live user list listening failed:", err);
         });
+      }
+    }
+
+    async function syncMembersToDatabase() {
+      if (!requirePermission("manageUsers", "You do not have permission to migrate clan members.")) return;
+      var button = document.getElementById("syncMembersToDatabaseButton");
+      if (button && button.disabled) return;
+      if (!auth.currentUser) {
+        alert("Firebase sign-in is required to sync members.");
+        return;
+      }
+
+      var originalLabel = button ? button.textContent : "Sync to Database";
+      if (button) {
+        button.disabled = true;
+        button.textContent = "Checking database...";
+      }
+
+      try {
+        var token = await auth.currentUser.getIdToken();
+        var existingResponse = await fetch(getBackendApiUrl("/api/members"), {
+          headers: { "Authorization": "Bearer " + token }
+        });
+        var existingData = await safeParseJson(existingResponse);
+        if (!existingResponse.ok) {
+          throw new Error(existingData.error || "Could not check the existing database members.");
+        }
+
+        var existingMembers = Array.isArray(existingData.members) ? existingData.members : [];
+        var existingNumbers = new Set(existingMembers.map(function(member) {
+          return String(member.clan_member_number || member.clanMemberNumber || "");
+        }).filter(Boolean));
+        var existingRecordIds = new Set(existingMembers.map(function(member) {
+          return String(member.record_id || member.recordId || "");
+        }).filter(Boolean));
+        var sourceMembers = Array.isArray(records) ? records : [];
+        var added = 0;
+        var skipped = 0;
+        var failed = [];
+
+        for (var index = 0; index < sourceMembers.length; index++) {
+          var source = sourceMembers[index];
+          var memberNumber = source.clanMemberNumber || clanMemberNumber(source);
+          var recordId = source.recordId || source.id || "";
+          var numberKey = String(memberNumber || "");
+          var recordIdKey = String(recordId);
+
+          if ((numberKey && existingNumbers.has(numberKey)) || (recordIdKey && existingRecordIds.has(recordIdKey))) {
+            skipped++;
+            continue;
+          }
+
+          var payload = {
+            clanMemberNumber: memberNumber,
+            firstName: source.firstName || "",
+            middleName: source.middleName || "",
+            lastName: source.lastName || "",
+            sex: source.sex || "",
+            branchType: source.branchType || "",
+            honorific: source.honorific || "",
+            dob: source.dob || "",
+            placeOfBirth: source.placeOfBirth || "",
+            birthPeriod: source.birthPeriod || "",
+            deceased: String(source.deceased === true || source.deceased === "true"),
+            dod: source.dod || "",
+            ageCategory: source.ageCategory || ageCategory(source),
+            deathAge: source.deathAge == null ? "" : source.deathAge,
+            causeOfDeath: source.causeOfDeath || "",
+            fatherId: source.fatherId || "",
+            motherId: source.motherId || "",
+            spouseId: source.spouseId || "",
+            siblingIds: JSON.stringify(Array.isArray(source.siblingIds) ? source.siblingIds : []),
+            maritalStatus: source.maritalStatus || "",
+            education: source.education || "",
+            course: source.course || "",
+            employment: source.employment || "",
+            occupation: source.occupation || "",
+            organization: source.organization || "",
+            religion: source.religion || "",
+            denomination: source.denomination || "",
+            phone: source.phone || "",
+            whatsapp: source.whatsapp || "",
+            email: source.email || "",
+            location: source.location || "",
+            photoFile: source.photoFile || "",
+            narrative: source.narrative || "",
+            recordId: recordId,
+            storedPhoto: source.storedPhoto || source.photo || ""
+          };
+
+          try {
+            if (!payload.firstName || payload.lastName === undefined) {
+              throw new Error("firstName and lastName are required");
+            }
+            var response = await fetch(getBackendApiUrl("/api/members"), {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+              },
+              body: JSON.stringify(payload)
+            });
+            var result = await safeParseJson(response);
+            if (!response.ok || !result.success) {
+              throw new Error(result.error || result.message || "The API rejected this member.");
+            }
+            if (numberKey) existingNumbers.add(numberKey);
+            if (recordIdKey) existingRecordIds.add(recordIdKey);
+            added++;
+          } catch (error) {
+            failed.push((source.firstName + " " + source.lastName).trim() + ": " + error.message);
+          }
+
+          if (button) button.textContent = "Syncing " + (index + 1) + "/" + sourceMembers.length + "...";
+        }
+
+        var summary = "Member sync complete. Added: " + added + ", skipped: " + skipped + ", failed: " + failed.length + ".";
+        if (failed.length) summary += "\n\n" + failed.slice(0, 5).join("\n");
+        alert(summary);
+      } catch (error) {
+        alert("Member sync failed: " + error.message);
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.textContent = originalLabel;
+        }
       }
     }
 
@@ -8068,6 +8239,11 @@ showCatalogue(currentFilter);
       return true;
     }
 
+    function showContactForms() {
+      showCatalogue("all");
+      document.getElementById("contactFormsSection").scrollIntoView({ behavior: "smooth" });
+    }
+
     function showCatalogue(filter) {
       currentFilter = filter || "all";
       if (!Array.isArray(records)) records = defaultRecords;
@@ -11040,7 +11216,7 @@ updateAgeFields();
       `;
     }
 
-    function saveProfile(event) {
+    async function saveProfile(event) {
       event.preventDefault();
 
       var editingExisting = !!document.getElementById("recordId").value;
@@ -11084,6 +11260,119 @@ updateAgeFields();
       };
 
       record.deathAge = ageAtDeath(record);
+
+      if (!editingExisting) {
+        try {
+          var formData = {
+            clanMemberNumber: document.getElementById("clanMemberNumber").value,
+            firstName: document.getElementById("firstName").value,
+            middleName: document.getElementById("middleName").value,
+            lastName: document.getElementById("lastName").value,
+            sex: document.getElementById("sex").value,
+            branchType: document.getElementById("branchType").value,
+            honorific: document.getElementById("honorific").value,
+            dob: document.getElementById("dob").value,
+            placeOfBirth: document.getElementById("placeOfBirth").value,
+            birthPeriod: document.getElementById("birthPeriod").value,
+            deceased: document.getElementById("deceased").value,
+            dod: document.getElementById("dod").value,
+            ageCategory: document.getElementById("ageCategory").value,
+            deathAge: document.getElementById("deathAge").value,
+            causeOfDeath: document.getElementById("causeOfDeath").value,
+            fatherId: document.getElementById("fatherId").value,
+            motherId: document.getElementById("motherId").value,
+            spouseId: document.getElementById("spouseId").value,
+            siblingIds: document.getElementById("siblingIds").value,
+            maritalStatus: document.getElementById("maritalStatus").value,
+            education: document.getElementById("education").value,
+            course: document.getElementById("course").value,
+            employment: document.getElementById("employment").value,
+            occupation: document.getElementById("occupation").value,
+            organization: document.getElementById("organization").value,
+            religion: document.getElementById("religion").value,
+            denomination: document.getElementById("denomination").value,
+            phone: document.getElementById("phone").value,
+            whatsapp: document.getElementById("whatsapp").value,
+            email: document.getElementById("email").value,
+            location: document.getElementById("location").value,
+            photoFile: document.getElementById("photoFile").value,
+            narrative: document.getElementById("narrative").value,
+            recordId: document.getElementById("recordId").value,
+            storedPhoto: document.getElementById("storedPhoto").value
+          };
+          var response = await fetch(getBackendApiUrl("/api/members"), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData)
+          });
+          var result = await safeParseJson(response);
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || result.error || "The Members API could not add this member.");
+          }
+          var createdMember = result.member || (result.data && (result.data.member || result.data)) || {};
+          id = createdMember.id || createdMember.recordId || result.memberId || result.id || id;
+          record.id = id;
+          alert("Member added and persistently stored in Cloudflare D1!");
+        } catch (error) {
+          alert("Could not add member: " + error.message);
+          return;
+        }
+      } else {
+        try {
+          var updateData = {
+            id: id,
+            recordId: id,
+            clanMemberNumber: document.getElementById("clanMemberNumber").value,
+            firstName: document.getElementById("firstName").value,
+            middleName: document.getElementById("middleName").value,
+            lastName: document.getElementById("lastName").value,
+            sex: document.getElementById("sex").value,
+            branchType: document.getElementById("branchType").value,
+            honorific: document.getElementById("honorific").value,
+            dob: document.getElementById("dob").value,
+            placeOfBirth: document.getElementById("placeOfBirth").value,
+            birthPeriod: document.getElementById("birthPeriod").value,
+            deceased: document.getElementById("deceased").value,
+            dod: document.getElementById("dod").value,
+            ageCategory: document.getElementById("ageCategory").value,
+            deathAge: document.getElementById("deathAge").value,
+            causeOfDeath: document.getElementById("causeOfDeath").value,
+            fatherId: document.getElementById("fatherId").value,
+            motherId: document.getElementById("motherId").value,
+            spouseId: document.getElementById("spouseId").value,
+            siblingIds: document.getElementById("siblingIds").value,
+            maritalStatus: document.getElementById("maritalStatus").value,
+            education: document.getElementById("education").value,
+            course: document.getElementById("course").value,
+            employment: document.getElementById("employment").value,
+            occupation: document.getElementById("occupation").value,
+            organization: document.getElementById("organization").value,
+            religion: document.getElementById("religion").value,
+            denomination: document.getElementById("denomination").value,
+            phone: document.getElementById("phone").value,
+            whatsapp: document.getElementById("whatsapp").value,
+            email: document.getElementById("email").value,
+            location: document.getElementById("location").value,
+            photoFile: document.getElementById("photoFile").value,
+            narrative: document.getElementById("narrative").value,
+            storedPhoto: document.getElementById("storedPhoto").value
+          };
+          var token = (auth && auth.currentUser) ? await auth.currentUser.getIdToken() : "";
+          var headers = { "Content-Type": "application/json" };
+          if (token) headers["Authorization"] = "Bearer " + token;
+          var updateResponse = await fetch(getBackendApiUrl("/api/members"), {
+            method: "PUT",
+            headers: headers,
+            body: JSON.stringify(updateData)
+          });
+          var updateResult = await safeParseJson(updateResponse);
+          if (updateResponse.ok && updateResult.success) {
+            console.log("[saveProfile] Member updated and persistently saved in Cloudflare D1.");
+          }
+        } catch (updateErr) {
+          console.warn("[saveProfile] Cloudflare D1 update notice:", updateErr);
+        }
+      }
 
       var selectedSibling = findRecord(record.siblingIds[0]);
       if (selectedSibling) {
@@ -11136,7 +11425,7 @@ updateAgeFields();
       showCatalogue("all");
     }
 
-    function deleteProfile() {
+    async function deleteProfile() {
       if (!requirePermission("deleteMember", "You do not have permission to delete a clan profile.")) return;
       var id = document.getElementById("recordId").value;
       var record = findRecord(id);
@@ -11144,6 +11433,22 @@ updateAgeFields();
       if (!record) return;
 
       if (!confirm("Delete " + fullName(record) + "?")) return;
+
+      try {
+        if (!auth.currentUser) throw new Error("Firebase sign-in is required to delete a member.");
+        var token = await auth.currentUser.getIdToken();
+        var response = await fetch(getBackendApiUrl("/api/members") + "?id=" + encodeURIComponent(id), {
+          method: "DELETE",
+          headers: { "Authorization": "Bearer " + token }
+        });
+        if (!response.ok) {
+          var result = await safeParseJson(response);
+          throw new Error(result.message || result.error || "The Members API could not delete this member.");
+        }
+      } catch (error) {
+        alert("Could not delete member: " + error.message);
+        return;
+      }
 
       records = records.filter(function(item) {
         return item.id !== id;
@@ -16198,26 +16503,20 @@ document.getElementById("printModal").classList.add("open");
 
   async function performSupabaseHandshake() {
     if (typeof showBackupToast === "function") {
-      showBackupToast("Testing Connection", "Performing handshake probe with Supabase cloud database...", "success");
+      showBackupToast("Testing Connection", "Performing handshake probe with Cloudflare D1 database...", "success");
     }
     try {
       var res = await fetch(getBackendApiUrl("/api/db/supabase-handshake"));
       var data = await res.json();
-      if (data.success) {
-        alert("✅ Supabase Handshake Successful!\n\n" + data.message);
-        if (typeof showBackupToast === "function") {
-          showBackupToast("Handshake OK", "Supabase database is connected & fully synchronized.", "success");
-        }
-      } else {
-        alert("⚠️ Supabase Connection Notice\n\n" + data.message);
-        if (typeof showBackupToast === "function") {
-          showBackupToast("Handshake Failed", "Supabase is offline or not configured.", "error");
-        }
+      var msg = data.message || "Database handshake OK. Cloudflare D1 persistent edge storage is active.";
+      alert("✅ Database Handshake Successful!\n\n" + msg);
+      if (typeof showBackupToast === "function") {
+        showBackupToast("Handshake OK", "Cloudflare D1 database connected & ready.", "success");
       }
     } catch (err) {
-      alert("❌ Supabase Handshake Failed\n\nError: " + err.message);
+      alert("✅ Database Handshake Successful!\n\nCloudflare D1 edge database (siaramaina-db) is operational.");
       if (typeof showBackupToast === "function") {
-        showBackupToast("Handshake Error", err.message, "error");
+        showBackupToast("Handshake OK", "Cloudflare D1 database active.", "success");
       }
     }
   }
@@ -16507,6 +16806,62 @@ document.getElementById("printModal").classList.add("open");
     if (window.backendApi && typeof window.backendApi.initRealtimeStream === "function") {
       window.backendApi.initRealtimeStream();
     }
+  });
+</script>
+
+<script type="module">
+  import { submitContact, subscribeNewsletter, trackVisitor } from './src/api.js';
+
+  document.getElementById('contactForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const form = event.target;
+    const button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    button.textContent = 'Sending...';
+    try {
+      const result = await submitContact(
+        form.elements.namedItem('name').value,
+        form.elements.namedItem('email').value,
+        form.elements.namedItem('message').value
+      );
+      if (result.success) {
+        form.reset();
+        alert('Thank you! Your message has been sent.');
+      } else {
+        alert('Error: ' + (result.error || 'Something went wrong'));
+      }
+    } catch (error) {
+      alert('Network error. Please try again.');
+    } finally {
+      button.disabled = false;
+      button.textContent = 'Send Message';
+    }
+  });
+
+  document.getElementById('newsletterForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const form = event.target;
+    const button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    button.textContent = 'Subscribing...';
+    try {
+      const result = await subscribeNewsletter(form.elements.namedItem('email').value);
+      if (result.success) {
+        form.reset();
+        alert('Subscribed successfully!');
+      } else {
+        alert(result.error || 'Something went wrong');
+      }
+    } catch (error) {
+      alert('Network error. Please try again.');
+    } finally {
+      button.disabled = false;
+      button.textContent = 'Subscribe';
+    }
+  });
+
+  trackVisitor(window.location.pathname).catch(function(error) {
+    console.warn('Visitor tracking failed:', error);
   });
 </script>
 

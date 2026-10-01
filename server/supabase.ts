@@ -5,51 +5,10 @@ export let isSupabaseConfigured = false;
 export let supabase: SupabaseClient | null = null;
 
 export function initializeSupabase() {
-  dotenv.config({ override: true });
-  let url = (process.env.VITE_SUPABASE_URL || "").trim();
-  const anonKey = (process.env.VITE_SUPABASE_ANON_KEY || "").trim();
-  const serviceRoleKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
-
-  // Strip trailing slashes first
-  url = url.replace(/\/$/, "");
-
-  // Strip trailing REST endpoint paths if incorrectly supplied by the user
-  if (url.endsWith("/rest/v1")) {
-    url = url.substring(0, url.length - 8);
-  } else if (url.endsWith("/rest/v1/")) {
-    url = url.substring(0, url.length - 9);
-  }
-
-  url = url.trim().replace(/\/$/, "");
-
-  isSupabaseConfigured = !!(
-    url &&
-    url.startsWith("https://") &&
-    !url.includes("your-project.supabase.co") &&
-    (serviceRoleKey || anonKey)
-  );
-
-  if (isSupabaseConfigured) {
-    try {
-      // Backend uses Service Role Key to perform private administrative actions securely
-      supabase = createClient(url, serviceRoleKey || anonKey, {
-        auth: {
-          persistSession: false,
-          autoRefreshToken: false,
-        },
-      });
-      console.log(`[Supabase] Active connection initialized successfully with postgres engine at ${url}`);
-    } catch (err) {
-      console.warn("[Supabase] Error initializing client:", err);
-      supabase = null;
-      isSupabaseConfigured = false;
-    }
-  } else {
-    supabase = null;
-    console.log(
-      "[Supabase] Working in local-fallback mode. Awaiting VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY variables."
-    );
-  }
+  // Supabase is deactivated by user configuration in favor of Cloudflare D1 persistent storage
+  isSupabaseConfigured = false;
+  supabase = null;
+  console.log("[Database] Primary persistent database: Cloudflare D1 (siaramaina-db). Supabase deactivated.");
 }
 
 // Perform initial load

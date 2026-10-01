@@ -79,9 +79,9 @@ app.get("/api/health", (req, res) => {
 
 function resolveSpaEntry(): string {
   const possiblePaths = [
-    path.join(process.cwd(), "SiaraMainaInformatics.html"),
     path.join(process.cwd(), "index.html"),
     path.join(process.cwd(), "dist", "index.html"),
+    path.join(process.cwd(), "SiaraMainaInformatics.html"),
   ];
   for (const p of possiblePaths) {
     if (fs.existsSync(p)) return p;
@@ -90,6 +90,9 @@ function resolveSpaEntry(): string {
 }
 
 app.get(["/", "/index.html", "/SiaraMainaInformatics.html"], (req, res) => {
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
   res.sendFile(resolveSpaEntry());
 });
 

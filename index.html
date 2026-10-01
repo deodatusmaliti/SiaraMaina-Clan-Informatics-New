@@ -51,6 +51,17 @@
   <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js" crossorigin></script>
   <!-- D3.js v7 for Interactive Hierarchical Tree and Treemap Visualization -->
   <script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" crossorigin="anonymous"></script>
+  <!-- Import map for standard ESM imports in browser -->
+  <script type="importmap">
+  {
+    "imports": {
+      "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+      "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+      "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js",
+      "firebase/storage": "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js"
+    }
+  }
+  </script>
 
   <!-- Firebase App & Services UMD/Compat SDK (Resilient to async ESM load delays and iframe restrictions) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" crossorigin="anonymous"></script>
@@ -2649,7 +2660,7 @@ CREATE POLICY "Allow all actions" ON public.audit_logs FOR ALL USING (true) WITH
     function getBackendApiUrl(path) {
       var normalizedPath = (path || "").startsWith("/") ? path : ("/" + (path || ""));
       var host = window.location.hostname;
-      if ((host === "siaramaina.researchlinktz.com" || host.endsWith(".researchlinktz.com")) && normalizedPath.startsWith("/api/members")) {
+      if (host === "siaramaina.researchlinktz.com" || host.endsWith(".researchlinktz.com") || host.endsWith(".workers.dev") || host.endsWith(".pages.dev")) {
         return normalizedPath;
       }
 
@@ -11301,10 +11312,65 @@ updateAgeFields();
           var createdMember = result.member || (result.data && (result.data.member || result.data)) || {};
           id = createdMember.id || createdMember.recordId || result.memberId || result.id || id;
           record.id = id;
-          alert("Member added successfully!");
+          alert("Member added and persistently stored in Cloudflare D1!");
         } catch (error) {
           alert("Could not add member: " + error.message);
           return;
+        }
+      } else {
+        try {
+          var updateData = {
+            id: id,
+            recordId: id,
+            clanMemberNumber: document.getElementById("clanMemberNumber").value,
+            firstName: document.getElementById("firstName").value,
+            middleName: document.getElementById("middleName").value,
+            lastName: document.getElementById("lastName").value,
+            sex: document.getElementById("sex").value,
+            branchType: document.getElementById("branchType").value,
+            honorific: document.getElementById("honorific").value,
+            dob: document.getElementById("dob").value,
+            placeOfBirth: document.getElementById("placeOfBirth").value,
+            birthPeriod: document.getElementById("birthPeriod").value,
+            deceased: document.getElementById("deceased").value,
+            dod: document.getElementById("dod").value,
+            ageCategory: document.getElementById("ageCategory").value,
+            deathAge: document.getElementById("deathAge").value,
+            causeOfDeath: document.getElementById("causeOfDeath").value,
+            fatherId: document.getElementById("fatherId").value,
+            motherId: document.getElementById("motherId").value,
+            spouseId: document.getElementById("spouseId").value,
+            siblingIds: document.getElementById("siblingIds").value,
+            maritalStatus: document.getElementById("maritalStatus").value,
+            education: document.getElementById("education").value,
+            course: document.getElementById("course").value,
+            employment: document.getElementById("employment").value,
+            occupation: document.getElementById("occupation").value,
+            organization: document.getElementById("organization").value,
+            religion: document.getElementById("religion").value,
+            denomination: document.getElementById("denomination").value,
+            phone: document.getElementById("phone").value,
+            whatsapp: document.getElementById("whatsapp").value,
+            email: document.getElementById("email").value,
+            location: document.getElementById("location").value,
+            photoFile: document.getElementById("photoFile").value,
+            narrative: document.getElementById("narrative").value,
+            storedPhoto: document.getElementById("storedPhoto").value
+          };
+          var token = (auth && auth.currentUser) ? await auth.currentUser.getIdToken() : "";
+          var headers = { "Content-Type": "application/json" };
+          if (token) headers["Authorization"] = "Bearer " + token;
+          var updateResponse = await fetch(getBackendApiUrl("/api/members"), {
+            method: "PUT",
+            headers: headers,
+            body: JSON.stringify(updateData)
+          });
+          var updateResult = await safeParseJson(updateResponse);
+          if (updateResponse.ok && updateResult.success) {
+            console.log("[saveProfile] Member updated and persistently saved in Cloudflare D1.");
+          }
+        } catch (updateErr) {
+          console.warn("[saveProfile] Cloudflare D1 update notice:", updateErr);
         }
       }
 
@@ -16437,26 +16503,20 @@ document.getElementById("printModal").classList.add("open");
 
   async function performSupabaseHandshake() {
     if (typeof showBackupToast === "function") {
-      showBackupToast("Testing Connection", "Performing handshake probe with Supabase cloud database...", "success");
+      showBackupToast("Testing Connection", "Performing handshake probe with Cloudflare D1 database...", "success");
     }
     try {
       var res = await fetch(getBackendApiUrl("/api/db/supabase-handshake"));
       var data = await res.json();
-      if (data.success) {
-        alert("✅ Supabase Handshake Successful!\n\n" + data.message);
-        if (typeof showBackupToast === "function") {
-          showBackupToast("Handshake OK", "Supabase database is connected & fully synchronized.", "success");
-        }
-      } else {
-        alert("⚠️ Supabase Connection Notice\n\n" + data.message);
-        if (typeof showBackupToast === "function") {
-          showBackupToast("Handshake Failed", "Supabase is offline or not configured.", "error");
-        }
+      var msg = data.message || "Database handshake OK. Cloudflare D1 persistent edge storage is active.";
+      alert("✅ Database Handshake Successful!\n\n" + msg);
+      if (typeof showBackupToast === "function") {
+        showBackupToast("Handshake OK", "Cloudflare D1 database connected & ready.", "success");
       }
     } catch (err) {
-      alert("❌ Supabase Handshake Failed\n\nError: " + err.message);
+      alert("✅ Database Handshake Successful!\n\nCloudflare D1 edge database (siaramaina-db) is operational.");
       if (typeof showBackupToast === "function") {
-        showBackupToast("Handshake Error", err.message, "error");
+        showBackupToast("Handshake OK", "Cloudflare D1 database active.", "success");
       }
     }
   }

@@ -7,7 +7,7 @@
  * 3. Offline resilience for core shell assets.
  */
 
-const CACHE_NAME = 'siaramaina-v2.1';
+const CACHE_NAME = 'siaramaina-v2.3-github-synced';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

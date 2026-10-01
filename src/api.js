@@ -1,9 +1,25 @@
-import { auth } from './firebase.js';
+function getAuthInstance() {
+  if (typeof window !== 'undefined') {
+    if (window.auth) return window.auth;
+    if (window.firebase && typeof window.firebase.auth === 'function') {
+      return window.firebase.auth();
+    }
+  }
+  return null;
+}
+
+export const auth = {
+  get currentUser() {
+    const inst = getAuthInstance();
+    return inst ? inst.currentUser : null;
+  }
+};
 
 const API_BASE = '';
 
 async function adminHeaders() {
-  const user = auth.currentUser;
+  const inst = getAuthInstance();
+  const user = inst ? inst.currentUser : null;
   if (!user) {
     throw new Error('Administrator sign-in required');
   }

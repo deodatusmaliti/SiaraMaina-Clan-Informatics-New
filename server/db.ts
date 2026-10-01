@@ -3,6 +3,8 @@ import path from "path";
 import crypto from "crypto";
 import { fileURLToPath } from "url";
 import { isSupabaseConfigured, supabase, supabaseDb } from "./supabase";
+import { db } from "../firebase.js";
+import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -114,6 +116,42 @@ function recoverFromBackup(filePath: string): any {
   return null;
 }
 
+async function saveToFirestore(collectionName: string, id: string, data: any) {
+  try {
+    if (!db) return;
+    const cleanId = String(id || data.id || "");
+    if (!cleanId) return;
+    const docRef = doc(db, collectionName, cleanId);
+    await setDoc(docRef, data);
+  } catch (err: any) {
+    console.warn(`[Firestore Sync Warning] Failed to write document ${id} to ${collectionName}:`, err.message);
+  }
+}
+
+async function deleteFromFirestore(collectionName: string, id: string) {
+  try {
+    if (!db) return;
+    const cleanId = String(id);
+    if (!cleanId) return;
+    const docRef = doc(db, collectionName, cleanId);
+    await deleteDoc(docRef);
+  } catch (err: any) {
+    console.warn(`[Firestore Sync Warning] Failed to delete document ${id} from ${collectionName}:`, err.message);
+  }
+}
+
+async function fetchFromFirestore(collectionName: string): Promise<any[]> {
+  try {
+    if (!db) return [];
+    const colRef = collection(db, collectionName);
+    const snapshot = await getDocs(colRef);
+    return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (err: any) {
+    console.warn(`[Firestore Sync Warning] Failed to fetch collection ${collectionName}:`, err.message);
+    return [];
+  }
+}
+
 class HardenedDatabaseEngine {
   private records: any[] = [];
   private users: any[] = [];
@@ -162,6 +200,32 @@ class HardenedDatabaseEngine {
 
     this.payments = atomicReadJsonSync(PAYMENTS_FILE, []);
     this.auditLogs = atomicReadJsonSync(AUDIT_FILE, []);
+
+    // 1.5 Load from Firestore as high-reliability durable cache if local files are empty or container restarted
+    try {
+      if (this.records.length === 0) {
+        const fsRecords = await fetchFromFirestore("records");
+        if (fsRecords && fsRecords.length > 0) {
+          console.log(`[DatabaseEngine] Restored ${fsRecords.length} records from Firestore durable cache.`);
+          this.records = fsRecords;
+        }
+      }
+      if (this.users.length === 0) {
+        const fsUsers = await fetchFromFirestore("users");
+        if (fsUsers && fsUsers.length > 0) {
+          console.log(`[DatabaseEngine] Restored ${fsUsers.length} users from Firestore durable cache.`);
+          this.users = fsUsers;
+        }
+      }
+      if (this.payments.length === 0) {
+        this.payments = await fetchFromFirestore("payments");
+      }
+      if (this.auditLogs.length === 0) {
+        this.auditLogs = await fetchFromFirestore("auditLogs");
+      }
+    } catch (fsErr: any) {
+      console.warn("[DatabaseEngine] Firestore restore cache failed:", fsErr.message);
+    }
 
     // 2. Load Supabase data if configured
     if (isSupabaseConfigured && supabase) {
@@ -313,8 +377,37 @@ class HardenedDatabaseEngine {
           console.warn("[Supabase Engine] Dynamic replaceCollection sync warning:", err.message);
         }
       }
+
+      // Direct write-through and dynamic deletion pruning in Firestore (Durable Cloud Fallback)
+      try {
+        const fsCol = name === "members" ? "records" : name;
+        const remoteFirestoreRecords = await fetchFromFirestore(fsCol);
+        const newIds = new Set(this.records.map((r) => r.id));
+
+        if (remoteFirestoreRecords) {
+          for (const r of remoteFirestoreRecords) {
+            if (r.id && !newIds.has(r.id)) {
+              console.log(`[Firestore Engine] Pruning deleted/orphaned record from Firestore: ${r.id}`);
+              await deleteFromFirestore(fsCol, r.id);
+            }
+          }
+        }
+
+        for (const r of this.records) {
+          await saveToFirestore(fsCol, r.id, r);
+        }
+      } catch (err: any) {
+        console.warn("[Firestore Engine] Dynamic replaceCollection sync warning:", err.message);
+      }
     } else if (name === "users") {
       this.users = list;
+      try {
+        for (const u of this.users) {
+          await saveToFirestore("users", u.id || u.uid, u);
+        }
+      } catch (err: any) {
+        console.warn("[Firestore Engine] Users sync warning:", err.message);
+      }
     } else if (name === "payments") {
       const existingIds = new Set(this.payments.map(p => p.id));
       for (const p of list) {
@@ -323,6 +416,7 @@ class HardenedDatabaseEngine {
           if (isSupabaseConfigured && supabase) {
             await supabaseDb.saveDocument("payments", p.id, p);
           }
+          saveToFirestore("payments", p.id, p).catch(() => {});
         }
       }
     }
@@ -386,6 +480,14 @@ class HardenedDatabaseEngine {
       await supabaseDb.saveDocument(tableMapping, docId, savedDoc);
     }
 
+    // Write-through to Firestore (Durable Cloud Fallback)
+    try {
+      const fsCol = collectionName === "members" ? "records" : collectionName;
+      await saveToFirestore(fsCol, docId, savedDoc);
+    } catch (fsErr: any) {
+      console.warn(`[DatabaseEngine] Background Firestore write-through failed for ${docId}:`, fsErr.message);
+    }
+
     await this.save();
     return savedDoc;
   }
@@ -421,6 +523,14 @@ class HardenedDatabaseEngine {
       // Write-through delete to Supabase
       if (isSupabaseConfigured && supabase && tableMapping) {
         await supabaseDb.deleteDocument(tableMapping, id);
+      }
+
+      // Delete-through to Firestore (Durable Cloud Fallback)
+      try {
+        const fsCol = collectionName === "members" ? "records" : collectionName;
+        await deleteFromFirestore(fsCol, id);
+      } catch (fsErr: any) {
+        console.warn(`[DatabaseEngine] Background Firestore delete-through failed for ${id}:`, fsErr.message);
       }
 
       await this.save();
@@ -465,6 +575,23 @@ class HardenedDatabaseEngine {
     };
     atomicWriteJsonSync(backupFile, snapshotData);
     return backupFile;
+  }
+
+  public listBackups() {
+    if (!fs.existsSync(BACKUP_DIR)) {
+      fs.mkdirSync(BACKUP_DIR, { recursive: true });
+    }
+    const files = fs.readdirSync(BACKUP_DIR).filter(f => f.endsWith(".json"));
+    return files.map(filename => {
+      const filepath = path.join(BACKUP_DIR, filename);
+      const stat = fs.statSync(filepath);
+      return {
+        filename,
+        size: stat.size,
+        sizeFormatted: (stat.size / 1024).toFixed(2) + " KB",
+        created: stat.mtime.toISOString(),
+      };
+    }).sort((a, b) => b.created.localeCompare(a.created));
   }
 
   public getStats() {

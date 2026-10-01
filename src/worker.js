@@ -84,7 +84,6 @@ export default {
           (url.pathname === "/api/content" && request.method === "GET" && !url.searchParams.get("key")) ||
           (url.pathname === "/api/visitors" && request.method === "GET") ||
           (url.pathname === "/api/stats" && request.method === "GET") ||
-          (url.pathname === "/api/members" && request.method === "GET") ||
           (url.pathname === "/api/members" && request.method === "DELETE");
 
         if (requiresAdmin) {
@@ -92,8 +91,83 @@ export default {
           if (authError) return authError;
         }
 
-        if (url.pathname.startsWith("/api/members")) {
+        if (url.pathname.startsWith("/api/members") || url.pathname.startsWith("/api/db/")) {
           await env.DB.prepare(MEMBER_CREATE_SQL).run();
+        }
+
+        if (url.pathname === "/api/db/supabase-handshake" || url.pathname === "/api/db/handshake") {
+          const countRes = await env.DB.prepare("SELECT COUNT(*) as count FROM members").first();
+          return jsonResponse({
+            success: true,
+            configured: true,
+            message: `Cloudflare D1 edge database (siaramaina-db) connected and healthy. Total persistent members in D1: ${countRes ? countRes.count : 0}.`,
+            database: "Cloudflare D1",
+            engine: "Cloudflare D1 SQLite Edge Engine",
+            ping: "OK"
+          }, 200, corsHeaders);
+        }
+
+        if (url.pathname === "/api/db/sync/records" && request.method === "POST") {
+          const body = await request.json();
+          const recordsToSync = Array.isArray(body.records) ? body.records : (Array.isArray(body) ? body : []);
+          let savedCount = 0;
+          for (const r of recordsToSync) {
+            if (!r.firstName && !r.lastName) continue;
+            const cols = [];
+            const vals = [];
+            for (const [camelKey, snakeKey] of Object.entries(FIELD_MAP)) {
+              if (r[camelKey] !== undefined && r[camelKey] !== null) {
+                cols.push(snakeKey);
+                vals.push(typeof r[camelKey] === 'object' ? JSON.stringify(r[camelKey]) : r[camelKey]);
+              }
+            }
+            const recId = String(r.id || r.recordId || "");
+            if (!cols.includes("record_id") && recId) {
+              cols.push("record_id");
+              vals.push(recId);
+            }
+            let existingRow = null;
+            if (recId) {
+              existingRow = await env.DB.prepare("SELECT id FROM members WHERE record_id = ?").bind(recId).first();
+            }
+            if (!existingRow && r.clanMemberNumber) {
+              existingRow = await env.DB.prepare("SELECT id FROM members WHERE clan_member_number = ?").bind(r.clanMemberNumber).first();
+            }
+            if (existingRow) {
+              const updateClauses = cols.map(c => `${c} = ?`);
+              updateClauses.push("updated_at = datetime('now')");
+              await env.DB.prepare(`UPDATE members SET ${updateClauses.join(", ")} WHERE id = ?`).bind(...vals, existingRow.id).run();
+            } else {
+              const placeholders = cols.map(() => "?").join(", ");
+              await env.DB.prepare(`INSERT INTO members (${cols.join(", ")}) VALUES (${placeholders})`).bind(...vals).run();
+            }
+            savedCount++;
+          }
+          return jsonResponse({ success: true, count: savedCount, message: `Successfully persisted ${savedCount} members to Cloudflare D1.` }, 200, corsHeaders);
+        }
+
+        if (url.pathname === "/api/db/collections/records" && request.method === "GET") {
+          const results = await env.DB.prepare("SELECT * FROM members ORDER BY created_at DESC").all();
+          const REVERSE_MAP = {};
+          for (const [camel, snake] of Object.entries(FIELD_MAP)) {
+            REVERSE_MAP[snake] = camel;
+          }
+          const formatted = (results.results || []).map(row => {
+            const obj = {};
+            for (const [snake, val] of Object.entries(row)) {
+              const camel = REVERSE_MAP[snake] || snake;
+              if (camel === 'siblingIds' && typeof val === 'string' && val.startsWith('[')) {
+                try { obj[camel] = JSON.parse(val); } catch(e) { obj[camel] = []; }
+              } else if (camel === 'deceased') {
+                obj[camel] = val === 'true' || val === true || val === 1;
+              } else {
+                obj[camel] = val;
+              }
+            }
+            obj.id = row.record_id || String(row.id);
+            return obj;
+          });
+          return jsonResponse(formatted, 200, corsHeaders);
         }
 
         if (url.pathname === "/api/members" && request.method === "POST") {
@@ -106,19 +180,59 @@ export default {
           for (const [camelKey, snakeKey] of Object.entries(FIELD_MAP)) {
             if (body[camelKey] !== undefined && body[camelKey] !== null && (body[camelKey] !== "" || camelKey === "lastName")) {
               cols.push(snakeKey);
-              vals.push(body[camelKey]);
+              vals.push(typeof body[camelKey] === 'object' ? JSON.stringify(body[camelKey]) : body[camelKey]);
             }
           }
-          const placeholders = cols.map(() => "?").join(", ");
-          const result = await env.DB.prepare(
-            "INSERT INTO members (" + cols.join(", ") + ") VALUES (" + placeholders + ")"
-          ).bind(...vals).run();
-          return jsonResponse({ success: true, message: "Member added", id: result.meta.last_row_id }, 200, corsHeaders);
+          const recId = String(body.recordId || body.id || "");
+          if (!cols.includes("record_id") && recId) {
+            cols.push("record_id");
+            vals.push(recId);
+          }
+
+          let existingRow = null;
+          if (recId) {
+            existingRow = await env.DB.prepare("SELECT id FROM members WHERE record_id = ?").bind(recId).first();
+          }
+          if (!existingRow && body.clanMemberNumber) {
+            existingRow = await env.DB.prepare("SELECT id FROM members WHERE clan_member_number = ?").bind(body.clanMemberNumber).first();
+          }
+
+          if (existingRow) {
+            const updateClauses = cols.map(c => `${c} = ?`);
+            updateClauses.push("updated_at = datetime('now')");
+            await env.DB.prepare(`UPDATE members SET ${updateClauses.join(", ")} WHERE id = ?`).bind(...vals, existingRow.id).run();
+            return jsonResponse({ success: true, message: "Member updated in D1", id: existingRow.id, recordId: recId }, 200, corsHeaders);
+          } else {
+            const placeholders = cols.map(() => "?").join(", ");
+            const result = await env.DB.prepare(
+              "INSERT INTO members (" + cols.join(", ") + ") VALUES (" + placeholders + ")"
+            ).bind(...vals).run();
+            return jsonResponse({ success: true, message: "Member added to D1", id: result.meta.last_row_id, recordId: recId }, 200, corsHeaders);
+          }
         }
 
         if (url.pathname === "/api/members" && request.method === "GET") {
           const results = await env.DB.prepare("SELECT * FROM members ORDER BY created_at DESC").all();
-          return jsonResponse({ members: results.results, count: results.results.length }, 200, corsHeaders);
+          const REVERSE_MAP = {};
+          for (const [camel, snake] of Object.entries(FIELD_MAP)) {
+            REVERSE_MAP[snake] = camel;
+          }
+          const formatted = (results.results || []).map(row => {
+            const obj = {};
+            for (const [snake, val] of Object.entries(row)) {
+              const camel = REVERSE_MAP[snake] || snake;
+              if (camel === 'siblingIds' && typeof val === 'string' && val.startsWith('[')) {
+                try { obj[camel] = JSON.parse(val); } catch(e) { obj[camel] = []; }
+              } else if (camel === 'deceased') {
+                obj[camel] = val === 'true' || val === true || val === 1;
+              } else {
+                obj[camel] = val;
+              }
+            }
+            obj.id = row.record_id || String(row.id);
+            return obj;
+          });
+          return jsonResponse({ members: results.results, records: formatted, count: results.results.length }, 200, corsHeaders);
         }
 
         if (url.pathname === "/api/members" && request.method === "DELETE") {
@@ -126,29 +240,49 @@ export default {
           if (!id) {
             return jsonResponse({ error: "id parameter is required" }, 400, corsHeaders);
           }
-          await env.DB.prepare("DELETE FROM members WHERE id = ?").bind(id).run();
-          return jsonResponse({ success: true, message: "Member deleted" }, 200, corsHeaders);
+          await env.DB.prepare("DELETE FROM members WHERE id = ? OR record_id = ?").bind(id, id).run();
+          return jsonResponse({ success: true, message: "Member deleted from D1" }, 200, corsHeaders);
         }
 
         if (url.pathname === "/api/members" && request.method === "PUT") {
           const body = await request.json();
-          if (!body.id) {
-            return jsonResponse({ error: "id is required" }, 400, corsHeaders);
+          const targetId = String(body.id || body.recordId || "");
+          if (!targetId && !body.clanMemberNumber) {
+            return jsonResponse({ error: "id, recordId, or clanMemberNumber is required" }, 400, corsHeaders);
           }
-          const setClauses = [];
+          const cols = [];
           const vals = [];
           for (const [camelKey, snakeKey] of Object.entries(FIELD_MAP)) {
             if (body[camelKey] !== undefined) {
-              setClauses.push(snakeKey + " = ?");
-              vals.push(body[camelKey]);
+              cols.push(snakeKey);
+              vals.push(typeof body[camelKey] === 'object' ? JSON.stringify(body[camelKey]) : body[camelKey]);
             }
           }
-          setClauses.push("updated_at = datetime('now')");
-          vals.push(body.id);
-          await env.DB.prepare(
-            "UPDATE members SET " + setClauses.join(", ") + " WHERE id = ?"
-          ).bind(...vals).run();
-          return jsonResponse({ success: true, message: "Member updated" }, 200, corsHeaders);
+          if (!cols.includes("record_id") && targetId) {
+            cols.push("record_id");
+            vals.push(targetId);
+          }
+
+          let existingRow = null;
+          if (targetId) {
+            existingRow = await env.DB.prepare("SELECT id FROM members WHERE id = ? OR record_id = ?").bind(targetId, targetId).first();
+          }
+          if (!existingRow && body.clanMemberNumber) {
+            existingRow = await env.DB.prepare("SELECT id FROM members WHERE clan_member_number = ?").bind(body.clanMemberNumber).first();
+          }
+
+          if (existingRow) {
+            const updateClauses = cols.map(c => `${c} = ?`);
+            updateClauses.push("updated_at = datetime('now')");
+            await env.DB.prepare(`UPDATE members SET ${updateClauses.join(", ")} WHERE id = ?`).bind(...vals, existingRow.id).run();
+            return jsonResponse({ success: true, message: "Member updated in D1", id: existingRow.id }, 200, corsHeaders);
+          } else {
+            const placeholders = cols.map(() => "?").join(", ");
+            const result = await env.DB.prepare(
+              "INSERT INTO members (" + cols.join(", ") + ") VALUES (" + placeholders + ")"
+            ).bind(...vals).run();
+            return jsonResponse({ success: true, message: "Member created and saved in D1", id: result.meta.last_row_id }, 200, corsHeaders);
+          }
         }
 
         if (url.pathname === "/api/contact" && request.method === "POST") {
