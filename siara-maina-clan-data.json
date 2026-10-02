@@ -1,6 +1,6 @@
 {
   "project": "SiaraMaina Clan Informatics",
-  "exportedAt": "2026-10-02T08:52:15.406Z",
+  "exportedAt": "2026-10-02T08:53:42.533Z",
   "count": 106,
   "lastPublishedBy": "Deodatus Maliti",
   "records": [
@@ -322,12 +322,12 @@
       "recordId": "ngowi1",
       "created_at": "2026-10-01 19:47:44",
       "updated_at": "2026-10-02 07:56:04",
-      "migratedFrom": "siaraMainaClan/records",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "lastModifiedByUid": "system_migration",
       "syncSource": "siara-maina-clan-data.json",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncedAt": "2026-09-28T12:49:02.193Z",
-      "fullName": "Ngowi I Mkamba Aliyetokea Marangu Moye"
+      "migratedFrom": "siaraMainaClan/records",
+      "fullName": "Ngowi I Mkamba Aliyetokea Marangu Moye",
+      "lastModifiedByUid": "system_migration"
     },
     {
       "sex": "Male",
@@ -366,12 +366,12 @@
       "recordId": "mremi",
       "created_at": "2026-10-01 19:47:44",
       "updated_at": "2026-10-02 07:56:04",
+      "syncSource": "siara-maina-clan-data.json",
       "lastModifiedByUid": "system_migration",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
       "fullName": "Mremi",
       "syncedAt": "2026-09-28T12:49:02.195Z",
-      "migratedFrom": "siaraMainaClan/records",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncSource": "siara-maina-clan-data.json"
+      "migratedFrom": "siaraMainaClan/records"
     },
     {
       "siblingIds": [],
@@ -410,12 +410,12 @@
       "recordId": "ngowi2",
       "created_at": "2026-10-01 19:47:44",
       "updated_at": "2026-10-02 07:56:05",
-      "syncedAt": "2026-09-28T12:49:02.195Z",
-      "migratedFrom": "siaraMainaClan/records",
-      "fullName": "Ngowi II",
-      "syncSource": "siara-maina-clan-data.json",
       "lastModifiedByUid": "system_migration",
-      "migratedAt": "2026-09-28T13:00:27.860Z"
+      "fullName": "Ngowi II",
+      "syncedAt": "2026-09-28T12:49:02.195Z",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "syncSource": "siara-maina-clan-data.json",
+      "migratedFrom": "siaraMainaClan/records"
     },
     {
       "education": "Not Recorded",
@@ -454,12 +454,12 @@
       "recordId": "nyange",
       "created_at": "2026-10-01 19:47:44",
       "updated_at": "2026-10-02 07:56:05",
-      "lastModifiedByUid": "system_migration",
+      "syncSource": "siara-maina-clan-data.json",
       "migratedFrom": "siaraMainaClan/records",
       "fullName": "Nyange",
       "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncedAt": "2026-09-28T12:49:02.195Z",
-      "syncSource": "siara-maina-clan-data.json"
+      "lastModifiedByUid": "system_migration",
+      "syncedAt": "2026-09-28T12:49:02.195Z"
     },
     {
       "location": "Kilimanjaro Slopes, Tanzania",
@@ -500,11 +500,11 @@
       "created_at": "2026-10-01 19:47:44",
       "updated_at": "2026-10-02 07:56:05",
       "fullName": "James Siara",
+      "migratedFrom": "siaraMainaClan/records",
       "syncedAt": "2026-09-28T12:49:02.195Z",
       "syncSource": "siara-maina-clan-data.json",
-      "migratedFrom": "siaraMainaClan/records",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "lastModifiedByUid": "system_migration"
+      "lastModifiedByUid": "system_migration",
+      "migratedAt": "2026-09-28T13:00:27.860Z"
     },
     {
       "middleName": "",
@@ -544,12 +544,12 @@
       "recordId": "maina",
       "created_at": "2026-10-01 19:47:44",
       "updated_at": "2026-10-02 07:56:06",
+      "syncedAt": "2026-09-28T12:49:02.196Z",
+      "syncSource": "siara-maina-clan-data.json",
+      "migratedFrom": "siaraMainaClan/records",
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "fullName": "Maina",
-      "syncSource": "siara-maina-clan-data.json",
-      "lastModifiedByUid": "system_migration",
-      "syncedAt": "2026-09-28T12:49:02.196Z",
-      "migratedFrom": "siaraMainaClan/records"
+      "lastModifiedByUid": "system_migration"
     },
     {
       "motherId": "",
@@ -589,8 +589,8 @@
       "created_at": "2026-10-01 19:47:44",
       "updated_at": "2026-10-02 07:56:06",
       "syncedAt": "2026-09-28T12:49:02.196Z",
-      "migratedFrom": "siaraMainaClan/records",
       "fullName": "Joseph Siara Maliti",
+      "migratedFrom": "siaraMainaClan/records",
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "lastModifiedByUid": "system_migration",
       "syncSource": "siara-maina-clan-data.json"
@@ -632,12 +632,12 @@
       "recordId": "member-1787931559189",
       "created_at": "2026-10-01 19:47:44",
       "updated_at": "2026-10-02 07:56:06",
-      "syncSource": "siara-maina-clan-data.json",
-      "lastModifiedByUid": "system_migration",
       "migratedFrom": "siaraMainaClan/records",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "syncSource": "siara-maina-clan-data.json",
       "syncedAt": "2026-09-28T12:49:02.196Z",
-      "fullName": "Dontila Makundi"
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "fullName": "Dontila Makundi",
+      "lastModifiedByUid": "system_migration"
     },
     {
       "birthPeriod": "",
@@ -677,12 +677,12 @@
       "recordId": "member-1787937457121",
       "created_at": "2026-10-01 19:47:44",
       "updated_at": "2026-10-02 07:56:07",
-      "lastModifiedByUid": "system_migration",
-      "syncSource": "siara-maina-clan-data.json",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "syncedAt": "2026-09-28T12:49:02.196Z",
       "fullName": "Vincent Joseph Maliti",
       "migratedFrom": "siaraMainaClan/records",
-      "syncedAt": "2026-09-28T12:49:02.196Z"
+      "syncSource": "siara-maina-clan-data.json",
+      "lastModifiedByUid": "system_migration",
+      "migratedAt": "2026-09-28T13:00:27.860Z"
     },
     {
       "birthPeriod": "",
@@ -721,12 +721,12 @@
       "recordId": "member-1787937693627",
       "created_at": "2026-10-01 19:47:44",
       "updated_at": "2026-10-02 07:56:07",
-      "lastModifiedByUid": "system_migration",
       "migratedFrom": "siaraMainaClan/records",
-      "syncedAt": "2026-09-28T12:49:02.197Z",
+      "lastModifiedByUid": "system_migration",
+      "fullName": "Helena Elias Shayo",
       "syncSource": "siara-maina-clan-data.json",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "fullName": "Helena Elias Shayo"
+      "syncedAt": "2026-09-28T12:49:02.197Z",
+      "migratedAt": "2026-09-28T13:00:27.860Z"
     },
     {
       "whatsapp": "+264 81 412 4900",
@@ -768,12 +768,12 @@
       "recordId": "member-1787944665512",
       "created_at": "2026-10-01 19:47:44",
       "updated_at": "2026-10-02 07:56:08",
-      "fullName": "Deodatus Vincent Maliti",
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncSource": "siara-maina-clan-data.json",
-      "syncedAt": "2026-09-28T12:49:02.197Z",
+      "lastModifiedByUid": "system_migration",
       "migratedFrom": "siaraMainaClan/records",
-      "lastModifiedByUid": "system_migration"
+      "fullName": "Deodatus Vincent Maliti",
+      "syncedAt": "2026-09-28T12:49:02.197Z"
     },
     {
       "organization": "Maua Seminary",
@@ -812,12 +812,12 @@
       "recordId": "member-1787944893406",
       "created_at": "2026-10-01 19:47:44",
       "updated_at": "2026-10-02 07:56:08",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "fullName": "Victor Deodatus Maliti",
-      "syncSource": "siara-maina-clan-data.json",
       "migratedFrom": "siaraMainaClan/records",
+      "lastModifiedByUid": "system_migration",
+      "fullName": "Victor Deodatus Maliti",
       "syncedAt": "2026-09-28T12:49:02.197Z",
-      "lastModifiedByUid": "system_migration"
+      "syncSource": "siara-maina-clan-data.json",
+      "migratedAt": "2026-09-28T13:00:27.860Z"
     },
     {
       "education": "Certificate",
@@ -857,12 +857,12 @@
       "recordId": "member-1787987642610",
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:55:57",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "fullName": "Stephen Joseph Maliti",
-      "migratedFrom": "siaraMainaClan/records",
-      "syncSource": "siara-maina-clan-data.json",
       "lastModifiedByUid": "system_migration",
-      "syncedAt": "2026-09-28T12:49:02.197Z"
+      "syncedAt": "2026-09-28T12:49:02.197Z",
+      "fullName": "Stephen Joseph Maliti",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "migratedFrom": "siaraMainaClan/records",
+      "syncSource": "siara-maina-clan-data.json"
     },
     {
       "dob": "",
@@ -902,12 +902,12 @@
       "recordId": "member-1787987780274",
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:55:57",
-      "fullName": "Thomas Joseph Maliti",
       "lastModifiedByUid": "system_migration",
+      "fullName": "Thomas Joseph Maliti",
       "syncedAt": "2026-09-28T12:49:02.197Z",
-      "migratedFrom": "siaraMainaClan/records",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncSource": "siara-maina-clan-data.json",
-      "migratedAt": "2026-09-28T13:00:27.860Z"
+      "migratedFrom": "siaraMainaClan/records"
     },
     {
       "phone": "",
@@ -948,11 +948,11 @@
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:55:58",
       "syncedAt": "2026-09-28T12:49:02.198Z",
-      "migratedFrom": "siaraMainaClan/records",
       "fullName": "Alexander Joseph Maliti",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
       "lastModifiedByUid": "system_migration",
-      "syncSource": "siara-maina-clan-data.json"
+      "migratedFrom": "siaraMainaClan/records",
+      "syncSource": "siara-maina-clan-data.json",
+      "migratedAt": "2026-09-28T13:00:27.860Z"
     },
     {
       "phone": "",
@@ -992,12 +992,12 @@
       "recordId": "member-1787988068814",
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:55:58",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncedAt": "2026-09-28T12:49:02.198Z",
-      "syncSource": "siara-maina-clan-data.json",
       "fullName": "Remmy Joseph Maliti",
+      "syncedAt": "2026-09-28T12:49:02.198Z",
+      "migratedFrom": "siaraMainaClan/records",
       "lastModifiedByUid": "system_migration",
-      "migratedFrom": "siaraMainaClan/records"
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "syncSource": "siara-maina-clan-data.json"
     },
     {
       "fatherId": "josephMaliti",
@@ -1036,11 +1036,11 @@
       "recordId": "member-1787988175089",
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:55:58",
+      "lastModifiedByUid": "system_migration",
       "migratedFrom": "siaraMainaClan/records",
       "syncedAt": "2026-09-28T12:49:02.198Z",
-      "fullName": "Hugho Joseph Maliti",
       "syncSource": "siara-maina-clan-data.json",
-      "lastModifiedByUid": "system_migration",
+      "fullName": "Hugho Joseph Maliti",
       "migratedAt": "2026-09-28T13:00:27.860Z"
     },
     {
@@ -1081,12 +1081,12 @@
       "recordId": "member-1787988266228",
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:55:59",
-      "migratedFrom": "siaraMainaClan/records",
+      "fullName": "Peter Joseph Maliti",
+      "lastModifiedByUid": "system_migration",
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncSource": "siara-maina-clan-data.json",
       "syncedAt": "2026-09-28T12:49:02.198Z",
-      "lastModifiedByUid": "system_migration",
-      "fullName": "Peter Joseph Maliti"
+      "migratedFrom": "siaraMainaClan/records"
     },
     {
       "denomination": "Catholic",
@@ -1128,11 +1128,11 @@
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:55:59",
       "migratedFrom": "siaraMainaClan/records",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncSource": "siara-maina-clan-data.json",
       "syncedAt": "2026-09-28T12:49:02.198Z",
+      "fullName": "Paul Joseph Maliti",
+      "syncSource": "siara-maina-clan-data.json",
       "lastModifiedByUid": "system_migration",
-      "fullName": "Paul Joseph Maliti"
+      "migratedAt": "2026-09-28T13:00:27.860Z"
     },
     {
       "narrative": "",
@@ -1172,11 +1172,11 @@
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:56:00",
       "syncedAt": "2026-09-28T12:49:02.198Z",
-      "fullName": "Antonia Joseph Maliti",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncSource": "siara-maina-clan-data.json",
       "migratedFrom": "siaraMainaClan/records",
-      "lastModifiedByUid": "system_migration"
+      "lastModifiedByUid": "system_migration",
+      "syncSource": "siara-maina-clan-data.json",
+      "fullName": "Antonia Joseph Maliti",
+      "migratedAt": "2026-09-28T13:00:27.860Z"
     },
     {
       "education": "Primary Education",
@@ -1215,9 +1215,9 @@
       "recordId": "member-1787988600268",
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:56:00",
-      "migratedFrom": "siaraMainaClan/records",
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncSource": "siara-maina-clan-data.json",
+      "migratedFrom": "siaraMainaClan/records",
       "fullName": "Theresia Joseph Maliti",
       "lastModifiedByUid": "system_migration",
       "syncedAt": "2026-09-28T12:49:02.198Z"
@@ -1259,10 +1259,10 @@
       "recordId": "member-1787991618914",
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:56:00",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncedAt": "2026-09-28T12:49:02.198Z",
       "syncSource": "siara-maina-clan-data.json",
       "fullName": "Euphemia Joseph Maliti",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "syncedAt": "2026-09-28T12:49:02.198Z",
       "migratedFrom": "siaraMainaClan/records",
       "lastModifiedByUid": "system_migration"
     },
@@ -1306,10 +1306,10 @@
       "recordId": "member-1788350489677",
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:56:01",
-      "fullName": "James Vincent Maliti",
       "syncSource": "siara-maina-clan-data.json",
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncedAt": "2026-09-28T12:49:02.199Z",
+      "fullName": "James Vincent Maliti",
       "migratedFrom": "siaraMainaClan/records",
       "lastModifiedByUid": "system_migration"
     },
@@ -1351,12 +1351,12 @@
       "recordId": "member-1788353051545",
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:56:01",
-      "syncedAt": "2026-09-28T12:49:02.199Z",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncSource": "siara-maina-clan-data.json",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "lastModifiedByUid": "system_migration",
       "fullName": "Joseph Vincent Maliti",
       "migratedFrom": "siaraMainaClan/records",
-      "lastModifiedByUid": "system_migration"
+      "syncedAt": "2026-09-28T12:49:02.199Z"
     },
     {
       "religion": "Christianity",
@@ -1396,12 +1396,12 @@
       "recordId": "member-1788353967530",
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:56:02",
-      "fullName": "Pius Vincent Maliti",
-      "syncSource": "siara-maina-clan-data.json",
-      "syncedAt": "2026-09-28T12:49:02.199Z",
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "lastModifiedByUid": "system_migration",
-      "migratedFrom": "siaraMainaClan/records"
+      "syncSource": "siara-maina-clan-data.json",
+      "migratedFrom": "siaraMainaClan/records",
+      "fullName": "Pius Vincent Maliti",
+      "syncedAt": "2026-09-28T12:49:02.199Z"
     },
     {
       "honorific": "",
@@ -1441,12 +1441,12 @@
       "recordId": "member-1788354790047",
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:56:02",
-      "syncedAt": "2026-09-28T12:49:02.199Z",
-      "fullName": "Paul Vincent Maliti",
+      "migratedFrom": "siaraMainaClan/records",
       "migratedAt": "2026-09-28T13:00:27.860Z",
-      "lastModifiedByUid": "system_migration",
+      "syncedAt": "2026-09-28T12:49:02.199Z",
       "syncSource": "siara-maina-clan-data.json",
-      "migratedFrom": "siaraMainaClan/records"
+      "fullName": "Paul Vincent Maliti",
+      "lastModifiedByUid": "system_migration"
     },
     {
       "dob": "",
@@ -1488,11 +1488,11 @@
       "recordId": "member-1788356990949",
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:56:02",
-      "lastModifiedByUid": "system_migration",
-      "syncedAt": "2026-09-28T12:49:02.199Z",
-      "syncSource": "siara-maina-clan-data.json",
-      "fullName": "Salvatory Vincent Maliti",
       "migratedFrom": "siaraMainaClan/records",
+      "fullName": "Salvatory Vincent Maliti",
+      "lastModifiedByUid": "system_migration",
+      "syncSource": "siara-maina-clan-data.json",
+      "syncedAt": "2026-09-28T12:49:02.199Z",
       "migratedAt": "2026-09-28T13:00:27.860Z"
     },
     {
@@ -1535,12 +1535,12 @@
       "recordId": "member-1788357649403",
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:56:03",
-      "fullName": "Monica Vincent Maliti",
+      "syncedAt": "2026-09-28T12:49:02.199Z",
       "migratedFrom": "siaraMainaClan/records",
       "migratedAt": "2026-09-28T13:00:27.860Z",
-      "lastModifiedByUid": "system_migration",
       "syncSource": "siara-maina-clan-data.json",
-      "syncedAt": "2026-09-28T12:49:02.199Z"
+      "fullName": "Monica Vincent Maliti",
+      "lastModifiedByUid": "system_migration"
     },
     {
       "photo": "",
@@ -1583,11 +1583,11 @@
       "recordId": "member-1788357812808",
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:56:03",
-      "lastModifiedByUid": "system_migration",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncedAt": "2026-09-28T12:49:02.199Z",
       "syncSource": "siara-maina-clan-data.json",
       "fullName": "Dolorosa Vincent Maliti",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "lastModifiedByUid": "system_migration",
+      "syncedAt": "2026-09-28T12:49:02.199Z",
       "migratedFrom": "siaraMainaClan/records"
     },
     {
@@ -1630,12 +1630,12 @@
       "recordId": "member-1788357928256",
       "created_at": "2026-10-01 19:47:45",
       "updated_at": "2026-10-02 07:56:03",
-      "lastModifiedByUid": "system_migration",
-      "migratedFrom": "siaraMainaClan/records",
-      "fullName": "Suzana Vincent Maliti",
-      "syncedAt": "2026-09-28T12:49:02.199Z",
+      "syncSource": "siara-maina-clan-data.json",
       "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncSource": "siara-maina-clan-data.json"
+      "syncedAt": "2026-09-28T12:49:02.199Z",
+      "lastModifiedByUid": "system_migration",
+      "fullName": "Suzana Vincent Maliti",
+      "migratedFrom": "siaraMainaClan/records"
     },
     {
       "religion": "Not Recorded",
@@ -1675,12 +1675,12 @@
       "recordId": "member-1788457013199",
       "created_at": "2026-10-01 19:47:46",
       "updated_at": "2026-10-02 07:55:50",
-      "lastModifiedByUid": "system_migration",
       "syncedAt": "2026-09-28T12:49:02.199Z",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "lastModifiedByUid": "system_migration",
       "fullName": "Kombo",
       "syncSource": "siara-maina-clan-data.json",
-      "migratedFrom": "siaraMainaClan/records"
+      "migratedFrom": "siaraMainaClan/records",
+      "migratedAt": "2026-09-28T13:00:27.860Z"
     },
     {
       "sex": "Male",
@@ -1723,8 +1723,8 @@
       "lastModifiedByUid": "system_migration",
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncSource": "siara-maina-clan-data.json",
-      "fullName": "Teuwo",
       "migratedFrom": "siaraMainaClan/records",
+      "fullName": "Teuwo",
       "syncedAt": "2026-09-28T12:49:02.200Z"
     },
     {
@@ -1765,11 +1765,11 @@
       "recordId": "member-1788457439098",
       "created_at": "2026-10-01 19:47:46",
       "updated_at": "2026-10-02 07:55:50",
-      "fullName": "Rongoma",
-      "syncedAt": "2026-09-28T12:49:02.200Z",
-      "lastModifiedByUid": "system_migration",
-      "syncSource": "siara-maina-clan-data.json",
       "migratedFrom": "siaraMainaClan/records",
+      "fullName": "Rongoma",
+      "lastModifiedByUid": "system_migration",
+      "syncedAt": "2026-09-28T12:49:02.200Z",
+      "syncSource": "siara-maina-clan-data.json",
       "migratedAt": "2026-09-28T13:00:27.860Z"
     },
     {
@@ -1810,12 +1810,12 @@
       "recordId": "member-1788457581889",
       "created_at": "2026-10-01 19:47:46",
       "updated_at": "2026-10-02 07:55:51",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "lastModifiedByUid": "system_migration",
-      "syncSource": "siara-maina-clan-data.json",
+      "fullName": "Lumbuo",
       "syncedAt": "2026-09-28T12:49:02.200Z",
       "migratedFrom": "siaraMainaClan/records",
-      "fullName": "Lumbuo"
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "lastModifiedByUid": "system_migration",
+      "syncSource": "siara-maina-clan-data.json"
     },
     {
       "dob": "",
@@ -1855,12 +1855,12 @@
       "recordId": "member-1788457645229",
       "created_at": "2026-10-01 19:47:46",
       "updated_at": "2026-10-02 07:55:51",
-      "fullName": "Masaki",
-      "migratedFrom": "siaraMainaClan/records",
-      "lastModifiedByUid": "system_migration",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncedAt": "2026-09-28T12:49:02.200Z",
+      "migratedFrom": "siaraMainaClan/records",
       "syncSource": "siara-maina-clan-data.json",
-      "migratedAt": "2026-09-28T13:00:27.860Z"
+      "fullName": "Masaki",
+      "lastModifiedByUid": "system_migration"
     },
     {
       "middleName": "",
@@ -1900,11 +1900,11 @@
       "recordId": "member-1788457743532",
       "created_at": "2026-10-01 19:47:46",
       "updated_at": "2026-10-02 07:55:52",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncedAt": "2026-09-28T12:49:02.200Z",
       "syncSource": "siara-maina-clan-data.json",
-      "lastModifiedByUid": "system_migration",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
       "fullName": "Maambo",
+      "syncedAt": "2026-09-28T12:49:02.200Z",
+      "lastModifiedByUid": "system_migration",
       "migratedFrom": "siaraMainaClan/records"
     },
     {
@@ -1947,10 +1947,10 @@
       "updated_at": "2026-10-02 07:55:52",
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "lastModifiedByUid": "system_migration",
+      "migratedFrom": "siaraMainaClan/records",
       "syncSource": "siara-maina-clan-data.json",
       "syncedAt": "2026-09-28T12:49:02.200Z",
-      "fullName": "Msarikie",
-      "migratedFrom": "siaraMainaClan/records"
+      "fullName": "Msarikie"
     },
     {
       "fatherId": "member-1788457645229",
@@ -1990,12 +1990,12 @@
       "recordId": "member-1788458264132",
       "created_at": "2026-10-01 19:47:46",
       "updated_at": "2026-10-02 07:55:52",
-      "syncSource": "siara-maina-clan-data.json",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "fullName": "Pfumba",
+      "migratedFrom": "siaraMainaClan/records",
       "syncedAt": "2026-09-28T12:49:02.201Z",
       "lastModifiedByUid": "system_migration",
-      "migratedFrom": "siaraMainaClan/records",
-      "fullName": "Pfumba"
+      "syncSource": "siara-maina-clan-data.json",
+      "migratedAt": "2026-09-28T13:00:27.860Z"
     },
     {
       "firstName": "Kirita",
@@ -2035,10 +2035,10 @@
       "recordId": "member-1788458293822",
       "created_at": "2026-10-01 19:47:46",
       "updated_at": "2026-10-02 07:55:53",
-      "fullName": "Kirita",
-      "syncedAt": "2026-09-28T12:49:02.201Z",
       "lastModifiedByUid": "system_migration",
       "migratedFrom": "siaraMainaClan/records",
+      "syncedAt": "2026-09-28T12:49:02.201Z",
+      "fullName": "Kirita",
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncSource": "siara-maina-clan-data.json"
     },
@@ -2081,11 +2081,11 @@
       "created_at": "2026-10-01 19:47:46",
       "updated_at": "2026-10-02 07:55:54",
       "fullName": "Joseph",
-      "migratedFrom": "siaraMainaClan/records",
       "syncedAt": "2026-09-28T12:49:02.201Z",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
       "lastModifiedByUid": "system_migration",
-      "syncSource": "siara-maina-clan-data.json"
+      "syncSource": "siara-maina-clan-data.json",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "migratedFrom": "siaraMainaClan/records"
     },
     {
       "birthPeriod": "",
@@ -2125,12 +2125,12 @@
       "recordId": "member-1788458537589",
       "created_at": "2026-10-01 19:47:46",
       "updated_at": "2026-10-02 07:55:54",
+      "migratedFrom": "siaraMainaClan/records",
       "fullName": "John",
       "syncedAt": "2026-09-28T12:49:02.201Z",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncSource": "siara-maina-clan-data.json",
-      "lastModifiedByUid": "system_migration",
-      "migratedFrom": "siaraMainaClan/records"
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "lastModifiedByUid": "system_migration"
     },
     {
       "firstName": "Wilbad",
@@ -2170,12 +2170,12 @@
       "recordId": "member-1788458566880",
       "created_at": "2026-10-01 19:47:46",
       "updated_at": "2026-10-02 07:55:54",
-      "syncedAt": "2026-09-28T12:49:02.201Z",
-      "fullName": "Wilbad",
       "migratedFrom": "siaraMainaClan/records",
+      "syncedAt": "2026-09-28T12:49:02.201Z",
       "migratedAt": "2026-09-28T13:00:27.860Z",
+      "lastModifiedByUid": "system_migration",
       "syncSource": "siara-maina-clan-data.json",
-      "lastModifiedByUid": "system_migration"
+      "fullName": "Wilbad"
     },
     {
       "phone": "",
@@ -2215,12 +2215,12 @@
       "recordId": "member-1788458607790",
       "created_at": "2026-10-01 19:47:46",
       "updated_at": "2026-10-02 07:55:55",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncSource": "siara-maina-clan-data.json",
+      "syncedAt": "2026-09-28T12:49:02.201Z",
       "fullName": "Saira",
       "lastModifiedByUid": "system_migration",
-      "migratedFrom": "siaraMainaClan/records",
-      "syncedAt": "2026-09-28T12:49:02.201Z"
+      "syncSource": "siara-maina-clan-data.json",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "migratedFrom": "siaraMainaClan/records"
     },
     {
       "employment": "Not Recorded",
@@ -2261,11 +2261,11 @@
       "created_at": "2026-10-01 19:47:46",
       "updated_at": "2026-10-02 07:55:55",
       "lastModifiedByUid": "system_migration",
-      "syncedAt": "2026-09-28T12:49:02.201Z",
       "migratedFrom": "siaraMainaClan/records",
+      "syncedAt": "2026-09-28T12:49:02.201Z",
       "migratedAt": "2026-09-28T13:00:27.860Z",
-      "fullName": "Kismajuu",
-      "syncSource": "siara-maina-clan-data.json"
+      "syncSource": "siara-maina-clan-data.json",
+      "fullName": "Kismajuu"
     },
     {
       "dob": "",
@@ -2305,11 +2305,11 @@
       "recordId": "member-1788458674453",
       "created_at": "2026-10-01 19:47:46",
       "updated_at": "2026-10-02 07:55:55",
-      "syncedAt": "2026-09-28T12:49:02.202Z",
       "migratedAt": "2026-09-28T13:00:27.860Z",
-      "fullName": "Aloyce",
       "syncSource": "siara-maina-clan-data.json",
+      "fullName": "Aloyce",
       "migratedFrom": "siaraMainaClan/records",
+      "syncedAt": "2026-09-28T12:49:02.202Z",
       "lastModifiedByUid": "system_migration"
     },
     {
@@ -2352,10 +2352,10 @@
       "updated_at": "2026-10-02 07:55:56",
       "lastModifiedByUid": "system_migration",
       "syncedAt": "2026-09-28T12:49:02.202Z",
-      "migratedFrom": "siaraMainaClan/records",
       "migratedAt": "2026-09-28T13:00:27.860Z",
+      "syncSource": "siara-maina-clan-data.json",
       "fullName": "Makupa",
-      "syncSource": "siara-maina-clan-data.json"
+      "migratedFrom": "siaraMainaClan/records"
     },
     {
       "deathAge": "",
@@ -2395,11 +2395,11 @@
       "recordId": "member-1788459183895",
       "created_at": "2026-10-01 19:47:46",
       "updated_at": "2026-10-02 07:55:56",
+      "syncedAt": "2026-09-28T12:49:02.202Z",
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "fullName": "Mnyamari",
-      "syncSource": "siara-maina-clan-data.json",
       "lastModifiedByUid": "system_migration",
-      "syncedAt": "2026-09-28T12:49:02.202Z",
+      "syncSource": "siara-maina-clan-data.json",
       "migratedFrom": "siaraMainaClan/records"
     },
     {
@@ -2440,11 +2440,11 @@
       "recordId": "member-1788459231575",
       "created_at": "2026-10-01 19:47:46",
       "updated_at": "2026-10-02 07:55:57",
-      "syncSource": "siara-maina-clan-data.json",
-      "migratedFrom": "siaraMainaClan/records",
       "lastModifiedByUid": "system_migration",
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncedAt": "2026-09-28T12:49:02.202Z",
+      "migratedFrom": "siaraMainaClan/records",
+      "syncSource": "siara-maina-clan-data.json",
       "fullName": "Sarungu"
     },
     {
@@ -2485,12 +2485,12 @@
       "recordId": "member-1788459271058",
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:43",
-      "migratedFrom": "siaraMainaClan/records",
       "lastModifiedByUid": "system_migration",
-      "fullName": "John",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncedAt": "2026-09-28T12:49:02.202Z",
       "syncSource": "siara-maina-clan-data.json",
-      "migratedAt": "2026-09-28T13:00:27.860Z"
+      "migratedFrom": "siaraMainaClan/records",
+      "fullName": "John"
     },
     {
       "placeOfBirth": "",
@@ -2530,12 +2530,12 @@
       "recordId": "member-1788459310776",
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:43",
-      "migratedFrom": "siaraMainaClan/records",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncSource": "siara-maina-clan-data.json",
-      "syncedAt": "2026-09-28T12:49:02.202Z",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "migratedFrom": "siaraMainaClan/records",
       "lastModifiedByUid": "system_migration",
-      "fullName": "Mnanaria"
+      "fullName": "Mnanaria",
+      "syncedAt": "2026-09-28T12:49:02.202Z"
     },
     {
       "location": "",
@@ -2575,12 +2575,12 @@
       "recordId": "member-1788459347956",
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:44",
-      "lastModifiedByUid": "system_migration",
-      "migratedFrom": "siaraMainaClan/records",
       "syncSource": "siara-maina-clan-data.json",
+      "fullName": "Gasper",
       "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncedAt": "2026-09-28T12:49:02.202Z",
-      "fullName": "Gasper"
+      "migratedFrom": "siaraMainaClan/records",
+      "lastModifiedByUid": "system_migration",
+      "syncedAt": "2026-09-28T12:49:02.202Z"
     },
     {
       "lastName": "",
@@ -2620,12 +2620,12 @@
       "recordId": "member-1788459395364",
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:44",
-      "lastModifiedByUid": "system_migration",
-      "migratedFrom": "siaraMainaClan/records",
       "syncSource": "siara-maina-clan-data.json",
-      "fullName": "Mariki",
       "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncedAt": "2026-09-28T12:49:02.202Z"
+      "syncedAt": "2026-09-28T12:49:02.202Z",
+      "migratedFrom": "siaraMainaClan/records",
+      "fullName": "Mariki",
+      "lastModifiedByUid": "system_migration"
     },
     {
       "birthPeriod": "",
@@ -2665,11 +2665,11 @@
       "recordId": "member-1788695113674-ha31go",
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:45",
-      "syncedAt": "2026-09-28T12:49:02.203Z",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "fullName": "Patrick Kessy",
       "syncSource": "siara-maina-clan-data.json",
+      "fullName": "Patrick Kessy",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
       "lastModifiedByUid": "system_migration",
+      "syncedAt": "2026-09-28T12:49:02.203Z",
       "migratedFrom": "siaraMainaClan/records"
     },
     {
@@ -2710,12 +2710,12 @@
       "recordId": "member-1788695113675-ev4ynl",
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:45",
-      "syncSource": "siara-maina-clan-data.json",
+      "syncedAt": "2026-09-28T12:49:02.203Z",
+      "fullName": "Witness",
       "migratedFrom": "siaraMainaClan/records",
       "migratedAt": "2026-09-28T13:00:27.860Z",
-      "fullName": "Witness",
-      "syncedAt": "2026-09-28T12:49:02.203Z",
-      "lastModifiedByUid": "system_migration"
+      "lastModifiedByUid": "system_migration",
+      "syncSource": "siara-maina-clan-data.json"
     },
     {
       "occupation": "",
@@ -2755,12 +2755,12 @@
       "recordId": "member-1788695113675-nyd1kl",
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:45",
-      "lastModifiedByUid": "system_migration",
       "migratedFrom": "siaraMainaClan/records",
       "fullName": "Kelvin Joseph Maliti",
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncSource": "siara-maina-clan-data.json",
-      "syncedAt": "2026-09-28T12:49:02.203Z"
+      "syncedAt": "2026-09-28T12:49:02.203Z",
+      "lastModifiedByUid": "system_migration"
     },
     {
       "branchType": "maliti",
@@ -2800,12 +2800,12 @@
       "recordId": "member-1788695113675-ej586c",
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:46",
-      "fullName": "Kathbert Joseph Maliti",
-      "syncedAt": "2026-09-28T12:49:02.203Z",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncSource": "siara-maina-clan-data.json",
       "migratedFrom": "siaraMainaClan/records",
-      "lastModifiedByUid": "system_migration"
+      "fullName": "Kathbert Joseph Maliti",
+      "lastModifiedByUid": "system_migration",
+      "syncedAt": "2026-09-28T12:49:02.203Z",
+      "syncSource": "siara-maina-clan-data.json",
+      "migratedAt": "2026-09-28T13:00:27.860Z"
     },
     {
       "course": "",
@@ -2845,10 +2845,10 @@
       "recordId": "member-1788695113675-xm3iej",
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:46",
+      "syncedAt": "2026-09-28T12:49:02.203Z",
       "lastModifiedByUid": "system_migration",
       "fullName": "Karren Joseph Maliti",
       "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncedAt": "2026-09-28T12:49:02.203Z",
       "syncSource": "siara-maina-clan-data.json",
       "migratedFrom": "siaraMainaClan/records"
     },
@@ -2890,10 +2890,10 @@
       "recordId": "member-1788707065189-74k872",
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:47",
-      "syncedAt": "2026-09-28T12:49:02.203Z",
-      "migratedFrom": "siaraMainaClan/records",
       "fullName": "Vincent Pius Maliti",
       "syncSource": "siara-maina-clan-data.json",
+      "syncedAt": "2026-09-28T12:49:02.203Z",
+      "migratedFrom": "siaraMainaClan/records",
       "lastModifiedByUid": "system_migration",
       "migratedAt": "2026-09-28T13:00:27.860Z"
     },
@@ -2936,11 +2936,11 @@
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:47",
       "lastModifiedByUid": "system_migration",
-      "syncSource": "siara-maina-clan-data.json",
       "migratedFrom": "siaraMainaClan/records",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
       "fullName": "Brenda Pius Maliti",
-      "syncedAt": "2026-09-28T12:49:02.203Z"
+      "syncSource": "siara-maina-clan-data.json",
+      "syncedAt": "2026-09-28T12:49:02.203Z",
+      "migratedAt": "2026-09-28T13:00:27.860Z"
     },
     {
       "organization": "",
@@ -2980,12 +2980,12 @@
       "recordId": "member-1788707065190-evjqm7",
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:47",
-      "syncSource": "siara-maina-clan-data.json",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncedAt": "2026-09-28T12:49:02.203Z",
-      "fullName": "Helena Salvatory Maliti",
       "lastModifiedByUid": "system_migration",
-      "migratedFrom": "siaraMainaClan/records"
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "fullName": "Helena Salvatory Maliti",
+      "syncSource": "siara-maina-clan-data.json",
+      "migratedFrom": "siaraMainaClan/records",
+      "syncedAt": "2026-09-28T12:49:02.203Z"
     },
     {
       "narrative": "",
@@ -3027,12 +3027,12 @@
       "recordId": "member-1788707065190-nb579a",
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:48",
-      "fullName": "Edina Salvatory Maliti",
-      "syncedAt": "2026-09-28T12:49:02.203Z",
       "migratedFrom": "siaraMainaClan/records",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "syncedAt": "2026-09-28T12:49:02.203Z",
+      "syncSource": "siara-maina-clan-data.json",
       "lastModifiedByUid": "system_migration",
-      "syncSource": "siara-maina-clan-data.json"
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "fullName": "Edina Salvatory Maliti"
     },
     {
       "whatsapp": "",
@@ -3072,12 +3072,12 @@
       "recordId": "member-1788707065190-8yz1f8",
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:48",
-      "syncedAt": "2026-09-28T12:49:02.204Z",
-      "fullName": "Magreth Salvatory Maliti",
+      "migratedFrom": "siaraMainaClan/records",
       "migratedAt": "2026-09-28T13:00:27.860Z",
-      "lastModifiedByUid": "system_migration",
       "syncSource": "siara-maina-clan-data.json",
-      "migratedFrom": "siaraMainaClan/records"
+      "lastModifiedByUid": "system_migration",
+      "fullName": "Magreth Salvatory Maliti",
+      "syncedAt": "2026-09-28T12:49:02.204Z"
     },
     {
       "location": "",
@@ -3117,12 +3117,12 @@
       "recordId": "member-1788707065190-bdw5zd",
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:49",
+      "fullName": "Mary Salvatory Maliti",
       "syncedAt": "2026-09-28T12:49:02.204Z",
       "lastModifiedByUid": "system_migration",
-      "fullName": "Mary Salvatory Maliti",
-      "syncSource": "siara-maina-clan-data.json",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
       "migratedFrom": "siaraMainaClan/records",
-      "migratedAt": "2026-09-28T13:00:27.860Z"
+      "syncSource": "siara-maina-clan-data.json"
     },
     {
       "whatsapp": "",
@@ -3164,12 +3164,12 @@
       "recordId": "member-1788707065191-y5r802",
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:49",
-      "lastModifiedByUid": "system_migration",
+      "syncedAt": "2026-09-28T12:49:02.204Z",
       "migratedFrom": "siaraMainaClan/records",
       "fullName": "Colman Salvatory Maliti",
       "syncSource": "siara-maina-clan-data.json",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncedAt": "2026-09-28T12:49:02.204Z"
+      "lastModifiedByUid": "system_migration",
+      "migratedAt": "2026-09-28T13:00:27.860Z"
     },
     {
       "siblingIds": [],
@@ -3209,12 +3209,12 @@
       "recordId": "member-1788707065191-ueudp6",
       "created_at": "2026-10-01 19:47:47",
       "updated_at": "2026-10-02 07:55:49",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "syncSource": "siara-maina-clan-data.json",
       "lastModifiedByUid": "system_migration",
       "migratedFrom": "siaraMainaClan/records",
       "syncedAt": "2026-09-28T12:49:02.204Z",
-      "fullName": "Tonia",
-      "syncSource": "siara-maina-clan-data.json",
-      "migratedAt": "2026-09-28T13:00:27.860Z"
+      "fullName": "Tonia"
     },
     {
       "spouseId": "",
@@ -3254,12 +3254,12 @@
       "recordId": "member-1788707065191-cv0pi8",
       "created_at": "2026-10-01 19:47:48",
       "updated_at": "2026-10-02 07:55:37",
-      "lastModifiedByUid": "system_migration",
-      "syncSource": "siara-maina-clan-data.json",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "migratedFrom": "siaraMainaClan/records",
       "syncedAt": "2026-09-28T12:49:02.204Z",
-      "fullName": "Sonita"
+      "fullName": "Sonita",
+      "migratedFrom": "siaraMainaClan/records",
+      "syncSource": "siara-maina-clan-data.json",
+      "lastModifiedByUid": "system_migration",
+      "migratedAt": "2026-09-28T13:00:27.860Z"
     },
     {
       "religion": "Christianity",
@@ -3300,10 +3300,10 @@
       "created_at": "2026-10-01 19:47:48",
       "updated_at": "2026-10-02 07:55:37",
       "migratedFrom": "siaraMainaClan/records",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncSource": "siara-maina-clan-data.json",
       "syncedAt": "2026-09-28T12:49:02.204Z",
+      "syncSource": "siara-maina-clan-data.json",
       "lastModifiedByUid": "system_migration",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
       "fullName": "Brighton Paul Maliti"
     },
     {
@@ -3347,9 +3347,9 @@
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "migratedFrom": "siaraMainaClan/records",
       "syncSource": "siara-maina-clan-data.json",
-      "fullName": "Prudensiana Paul Maliti",
       "lastModifiedByUid": "system_migration",
-      "syncedAt": "2026-09-28T12:49:02.204Z"
+      "syncedAt": "2026-09-28T12:49:02.204Z",
+      "fullName": "Prudensiana Paul Maliti"
     },
     {
       "whatsapp": "",
@@ -3389,12 +3389,12 @@
       "recordId": "member-1788707065191-cu94h7",
       "created_at": "2026-10-01 19:47:48",
       "updated_at": "2026-10-02 07:55:38",
-      "lastModifiedByUid": "system_migration",
       "migratedFrom": "siaraMainaClan/records",
-      "fullName": "Kendrick Patrick Kessy",
+      "lastModifiedByUid": "system_migration",
+      "syncSource": "siara-maina-clan-data.json",
       "syncedAt": "2026-09-28T12:49:02.204Z",
       "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncSource": "siara-maina-clan-data.json"
+      "fullName": "Kendrick Patrick Kessy"
     },
     {
       "denomination": "Catholic",
@@ -3435,11 +3435,11 @@
       "created_at": "2026-10-01 19:47:48",
       "updated_at": "2026-10-02 07:55:38",
       "syncSource": "siara-maina-clan-data.json",
+      "migratedFrom": "siaraMainaClan/records",
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncedAt": "2026-09-28T12:49:02.204Z",
-      "migratedFrom": "siaraMainaClan/records",
-      "lastModifiedByUid": "system_migration",
-      "fullName": "Name Patrick Kessy"
+      "fullName": "Name Patrick Kessy",
+      "lastModifiedByUid": "system_migration"
     },
     {
       "course": "",
@@ -3479,12 +3479,12 @@
       "recordId": "member-1788707065192-mrs9ae",
       "created_at": "2026-10-01 19:47:48",
       "updated_at": "2026-10-02 07:55:38",
-      "lastModifiedByUid": "system_migration",
-      "migratedFrom": "siaraMainaClan/records",
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncSource": "siara-maina-clan-data.json",
-      "fullName": "Mario",
-      "syncedAt": "2026-09-28T12:49:02.204Z"
+      "lastModifiedByUid": "system_migration",
+      "syncedAt": "2026-09-28T12:49:02.204Z",
+      "migratedFrom": "siaraMainaClan/records",
+      "fullName": "Mario"
     },
     {
       "sex": "Male",
@@ -3524,12 +3524,12 @@
       "recordId": "member-1788707065192-wpeb39",
       "created_at": "2026-10-01 19:47:48",
       "updated_at": "2026-10-02 07:55:39",
+      "syncSource": "siara-maina-clan-data.json",
       "syncedAt": "2026-09-28T12:49:02.204Z",
       "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncSource": "siara-maina-clan-data.json",
-      "lastModifiedByUid": "system_migration",
+      "fullName": "Abdul",
       "migratedFrom": "siaraMainaClan/records",
-      "fullName": "Abdul"
+      "lastModifiedByUid": "system_migration"
     },
     {
       "occupation": "",
@@ -3569,12 +3569,12 @@
       "recordId": "member-1788724026755",
       "created_at": "2026-10-01 19:47:48",
       "updated_at": "2026-10-02 07:55:39",
-      "migratedFrom": "siaraMainaClan/records",
-      "lastModifiedByUid": "system_migration",
+      "fullName": "Ndetiko",
       "syncedAt": "2026-09-28T12:49:02.205Z",
-      "syncSource": "siara-maina-clan-data.json",
+      "migratedFrom": "siaraMainaClan/records",
       "migratedAt": "2026-09-28T13:00:27.860Z",
-      "fullName": "Ndetiko"
+      "syncSource": "siara-maina-clan-data.json",
+      "lastModifiedByUid": "system_migration"
     },
     {
       "phone": "",
@@ -3614,12 +3614,12 @@
       "recordId": "member-1788724145292",
       "created_at": "2026-10-01 19:47:48",
       "updated_at": "2026-10-02 07:55:40",
-      "lastModifiedByUid": "system_migration",
       "syncSource": "siara-maina-clan-data.json",
       "migratedAt": "2026-09-28T13:00:27.860Z",
+      "lastModifiedByUid": "system_migration",
+      "fullName": "Sariboko",
       "migratedFrom": "siaraMainaClan/records",
-      "syncedAt": "2026-09-28T12:49:02.205Z",
-      "fullName": "Sariboko"
+      "syncedAt": "2026-09-28T12:49:02.205Z"
     },
     {
       "dod": "",
@@ -3661,10 +3661,10 @@
       "updated_at": "2026-10-02 07:55:40",
       "fullName": "Mrekereke",
       "syncedAt": "2026-09-28T12:49:02.205Z",
-      "lastModifiedByUid": "system_migration",
       "migratedAt": "2026-09-28T13:00:27.860Z",
-      "migratedFrom": "siaraMainaClan/records",
-      "syncSource": "siara-maina-clan-data.json"
+      "lastModifiedByUid": "system_migration",
+      "syncSource": "siara-maina-clan-data.json",
+      "migratedFrom": "siaraMainaClan/records"
     },
     {
       "fatherId": "siara",
@@ -3704,12 +3704,12 @@
       "recordId": "member-1788724348318",
       "created_at": "2026-10-01 19:47:48",
       "updated_at": "2026-10-02 07:55:40",
-      "lastModifiedByUid": "system_migration",
-      "migratedFrom": "siaraMainaClan/records",
       "migratedAt": "2026-09-28T13:00:27.860Z",
       "syncSource": "siara-maina-clan-data.json",
+      "fullName": "Malekia",
       "syncedAt": "2026-09-28T12:49:02.205Z",
-      "fullName": "Malekia"
+      "lastModifiedByUid": "system_migration",
+      "migratedFrom": "siaraMainaClan/records"
     },
     {
       "organization": "",
@@ -3749,12 +3749,12 @@
       "recordId": "member-1788724412483",
       "created_at": "2026-10-01 19:47:48",
       "updated_at": "2026-10-02 07:55:41",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
       "migratedFrom": "siaraMainaClan/records",
       "syncSource": "siara-maina-clan-data.json",
       "syncedAt": "2026-09-28T12:49:02.205Z",
-      "lastModifiedByUid": "system_migration",
-      "fullName": "Sirili"
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "fullName": "Sirili",
+      "lastModifiedByUid": "system_migration"
     },
     {
       "phone": "",
@@ -3794,12 +3794,12 @@
       "recordId": "member-1788724535918",
       "created_at": "2026-10-01 19:47:48",
       "updated_at": "2026-10-02 07:55:41",
-      "syncSource": "siara-maina-clan-data.json",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "fullName": "Simoni Siara",
       "syncedAt": "2026-09-28T12:49:02.205Z",
       "migratedFrom": "siaraMainaClan/records",
-      "fullName": "Simoni Siara",
-      "lastModifiedByUid": "system_migration"
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "lastModifiedByUid": "system_migration",
+      "syncSource": "siara-maina-clan-data.json"
     },
     {
       "lastName": "",
@@ -3839,11 +3839,11 @@
       "recordId": "member-1788724661078",
       "created_at": "2026-10-01 19:47:48",
       "updated_at": "2026-10-02 07:55:42",
-      "migratedFrom": "siaraMainaClan/records",
-      "syncedAt": "2026-09-28T12:49:02.205Z",
-      "fullName": "Kiting'ati",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
       "lastModifiedByUid": "system_migration",
+      "syncedAt": "2026-09-28T12:49:02.205Z",
+      "migratedFrom": "siaraMainaClan/records",
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "fullName": "Kiting'ati",
       "syncSource": "siara-maina-clan-data.json"
     },
     {
@@ -3884,12 +3884,12 @@
       "recordId": "member-1789667207840",
       "created_at": "2026-10-01 19:47:48",
       "updated_at": "2026-10-02 07:55:42",
-      "migratedFrom": "siaraMainaClan/records",
-      "migratedAt": "2026-09-28T13:00:27.860Z",
-      "syncSource": "siara-maina-clan-data.json",
       "syncedAt": "2026-09-28T12:49:02.205Z",
-      "fullName": "Abraham",
-      "lastModifiedByUid": "system_migration"
+      "migratedAt": "2026-09-28T13:00:27.860Z",
+      "lastModifiedByUid": "system_migration",
+      "syncSource": "siara-maina-clan-data.json",
+      "migratedFrom": "siaraMainaClan/records",
+      "fullName": "Abraham"
     },
     {
       "email": "",
@@ -22468,219 +22468,219 @@
       "createdAt": "2026-09-30T10:06:08.580Z"
     },
     {
-      "honorific": "",
-      "occupation": "",
-      "placeOfBirth": "",
       "deceased": false,
+      "honorific": "",
       "firstName": "Remote",
-      "id": "member-1790677808124",
-      "location": "",
+      "sex": "Male",
       "religion": "Not Recorded",
-      "photo": "",
-      "course": "",
-      "fatherId": "",
+      "location": "",
+      "phone": "",
+      "middleName": "",
+      "placeOfBirth": "",
+      "dod": "",
       "deathAge": "",
-      "organization": "",
-      "dob": "",
+      "fatherId": "",
       "lastName": "",
-      "spouseId": "",
       "motherId": "",
+      "spouseId": "",
+      "course": "",
+      "branchType": "heritage",
       "updatedAt": "2026-09-29T10:30:09.007Z",
-      "employment": "Not Recorded",
-      "siblingIds": [],
-      "whatsapp": "",
-      "branchType": "heritage",
-      "birthPeriod": "",
-      "dod": "",
-      "narrative": "",
-      "education": "Not Recorded",
       "email": "",
+      "whatsapp": "",
+      "organization": "",
       "denomination": "",
-      "sex": "Male",
-      "middleName": "",
+      "employment": "Not Recorded",
+      "id": "member-1790677808124",
+      "siblingIds": [],
+      "narrative": "",
+      "maritalStatus": "Not Recorded",
+      "education": "Not Recorded",
+      "occupation": "",
+      "dob": "",
       "causeOfDeath": "Not Recorded",
-      "phone": "",
-      "maritalStatus": "Not Recorded"
+      "birthPeriod": "",
+      "photo": ""
     },
     {
-      "email": "",
-      "narrative": "",
-      "education": "Not Recorded",
-      "dob": "",
-      "middleName": "",
-      "maritalStatus": "Not Recorded",
-      "denomination": "",
-      "phone": "",
-      "causeOfDeath": "Not Recorded",
-      "branchType": "heritage",
-      "placeOfBirth": "",
-      "deceased": false,
-      "course": "",
-      "birthPeriod": "",
-      "religion": "Not Recorded",
-      "location": "",
-      "employment": "Not Recorded",
-      "siblingIds": [],
-      "photo": "",
-      "honorific": "",
-      "id": "member-1790678391462",
-      "firstName": "Remote",
-      "deathAge": "",
-      "fatherId": "",
-      "dod": "",
       "lastName": "",
-      "organization": "",
-      "updatedAt": "2026-09-29T10:43:27.451Z",
-      "motherId": "",
-      "spouseId": "",
-      "occupation": "",
-      "sex": "Male",
-      "whatsapp": ""
-    },
-    {
-      "id": "member-1790678463224",
-      "dod": "",
-      "placeOfBirth": "",
-      "phone": "",
-      "sex": "Male",
-      "branchType": "heritage",
-      "maritalStatus": "Not Recorded",
-      "organization": "",
-      "course": "",
-      "email": "",
       "middleName": "",
-      "education": "Not Recorded",
-      "birthPeriod": "",
-      "narrative": "",
+      "motherId": "",
+      "sex": "Male",
+      "spouseId": "",
+      "phone": "",
+      "updatedAt": "2026-09-29T10:43:27.451Z",
+      "maritalStatus": "Not Recorded",
+      "whatsapp": "",
+      "placeOfBirth": "",
+      "dod": "",
+      "branchType": "heritage",
+      "deceased": false,
+      "honorific": "",
+      "firstName": "Remote",
+      "location": "",
+      "religion": "Not Recorded",
+      "id": "member-1790678391462",
+      "email": "",
+      "organization": "",
       "fatherId": "",
       "deathAge": "",
       "denomination": "",
-      "location": "",
-      "religion": "Not Recorded",
-      "deceased": false,
-      "updatedAt": "2026-09-29T10:43:27.451Z",
-      "occupation": "",
-      "dob": "",
-      "whatsapp": "",
       "employment": "Not Recorded",
-      "causeOfDeath": "Not Recorded",
       "siblingIds": [],
+      "occupation": "",
+      "course": "",
+      "photo": "",
+      "birthPeriod": "",
+      "dob": "",
+      "narrative": "",
+      "causeOfDeath": "Not Recorded",
+      "education": "Not Recorded"
+    },
+    {
+      "dob": "",
+      "updatedAt": "2026-09-29T10:43:27.451Z",
+      "religion": "Not Recorded",
+      "location": "",
+      "organization": "",
+      "email": "",
+      "siblingIds": [],
+      "deceased": false,
+      "employment": "Not Recorded",
+      "deathAge": "",
+      "fatherId": "",
+      "maritalStatus": "Not Recorded",
+      "spouseId": "",
+      "motherId": "",
+      "phone": "",
+      "placeOfBirth": "",
+      "lastName": "",
+      "course": "",
       "firstName": "Edge",
       "honorific": "",
-      "motherId": "",
-      "spouseId": "",
-      "photo": "",
-      "lastName": ""
-    },
-    {
-      "photo": "",
-      "denomination": "",
-      "deathAge": "",
-      "fatherId": "",
-      "maritalStatus": "Not Recorded",
-      "updatedAt": "2026-09-29T10:43:27.451Z",
-      "deceased": false,
-      "religion": "Not Recorded",
-      "location": "",
-      "occupation": "",
-      "employment": "Not Recorded",
-      "dob": "",
-      "siblingIds": [],
       "whatsapp": "",
-      "lastName": "",
-      "honorific": "",
-      "spouseId": "",
-      "firstName": "iPhone",
+      "occupation": "",
+      "photo": "",
       "causeOfDeath": "Not Recorded",
-      "motherId": "",
-      "email": "",
-      "dod": "",
-      "course": "",
-      "placeOfBirth": "",
-      "branchType": "heritage",
-      "sex": "Male",
-      "education": "Not Recorded",
-      "id": "member-1790678604095",
-      "birthPeriod": "",
-      "phone": "",
+      "id": "member-1790678463224",
+      "middleName": "",
       "narrative": "",
-      "organization": "",
-      "middleName": ""
-    },
-    {
-      "narrative": "Testing permanent storage and remote cross-browser synchronization",
-      "updatedAt": "2026-09-29T11:00:57.568Z",
-      "id": "perm_member_1790679657524",
-      "location": "Arusha, Tanzania",
-      "firstName": "Zawadi",
-      "middleName": "Ezekiel",
-      "honorific": "Lineage Pioneer",
-      "branchType": "maina",
-      "deceased": false,
-      "lastName": "SiaraMaina",
-      "sex": "Female"
-    },
-    {
-      "firstName": "StreamTester",
-      "updatedAt": "2026-09-29T10:24:29.796Z",
-      "id": "stream_chunk_test_1790677469701"
-    },
-    {
-      "firstName": "Baraka",
-      "middleName": "Siara",
-      "honorific": "Lineage Member",
-      "location": "Moshi, Tanzania",
-      "branchType": "siara",
-      "deceased": false,
-      "lastName": "Maina",
-      "updatedAt": "2026-09-29T10:35:58.860Z",
-      "narrative": "Testing instant multi-browser cross-device reflection",
-      "id": "sync_verify_1790678158826",
+      "education": "Not Recorded",
+      "dod": "",
+      "denomination": "",
+      "birthPeriod": "",
+      "branchType": "heritage",
       "sex": "Male"
     },
     {
-      "updatedAt": "2026-09-29T10:24:46.551Z",
-      "fatherId": "ngowi1",
-      "middleName": "Kileo",
-      "birthPeriod": "Late 20th Century",
-      "placeOfBirth": "Marangu Moye",
-      "sex": "Female",
-      "siblingIds": [],
-      "location": "Dar es Salaam, Tanzania",
-      "deceased": false,
-      "narrative": "Real-time permanence verification test member.",
-      "id": "test_member_1790677462465",
-      "occupation": "Senior Informatics Archivist",
+      "fatherId": "",
+      "deathAge": "",
       "branchType": "heritage",
+      "email": "",
+      "education": "Not Recorded",
+      "location": "",
+      "religion": "Not Recorded",
+      "placeOfBirth": "",
+      "narrative": "",
+      "deceased": false,
+      "middleName": "",
+      "whatsapp": "",
+      "id": "member-1790678604095",
+      "dod": "",
+      "phone": "",
       "spouseId": "",
-      "firstName": "Amani",
-      "maritalStatus": "Married",
-      "dob": "1988-04-12",
-      "honorific": "Modern Lineage Elder",
       "motherId": "",
-      "lastName": "SiaraMaina"
+      "course": "",
+      "lastName": "",
+      "sex": "Male",
+      "organization": "",
+      "denomination": "",
+      "dob": "",
+      "firstName": "iPhone",
+      "occupation": "",
+      "honorific": "",
+      "photo": "",
+      "maritalStatus": "Not Recorded",
+      "causeOfDeath": "Not Recorded",
+      "employment": "Not Recorded",
+      "siblingIds": [],
+      "updatedAt": "2026-09-29T10:43:27.451Z",
+      "birthPeriod": ""
     },
     {
+      "lastName": "SiaraMaina",
+      "deceased": false,
+      "location": "Arusha, Tanzania",
+      "narrative": "Testing permanent storage and remote cross-browser synchronization",
+      "updatedAt": "2026-09-29T11:00:57.568Z",
       "sex": "Female",
+      "middleName": "Ezekiel",
+      "honorific": "Lineage Pioneer",
+      "id": "perm_member_1790679657524",
+      "branchType": "maina",
+      "firstName": "Zawadi"
+    },
+    {
+      "id": "stream_chunk_test_1790677469701",
+      "updatedAt": "2026-09-29T10:24:29.796Z",
+      "firstName": "StreamTester"
+    },
+    {
+      "narrative": "Testing instant multi-browser cross-device reflection",
+      "updatedAt": "2026-09-29T10:35:58.860Z",
+      "location": "Moshi, Tanzania",
+      "deceased": false,
+      "lastName": "Maina",
+      "firstName": "Baraka",
+      "branchType": "siara",
+      "sex": "Male",
+      "honorific": "Lineage Member",
+      "middleName": "Siara",
+      "id": "sync_verify_1790678158826"
+    },
+    {
+      "middleName": "Kileo",
+      "deceased": false,
+      "honorific": "Modern Lineage Elder",
+      "location": "Dar es Salaam, Tanzania",
+      "firstName": "Amani",
+      "siblingIds": [],
+      "dob": "1988-04-12",
+      "fatherId": "ngowi1",
       "narrative": "Real-time permanence verification test member.",
       "placeOfBirth": "Marangu Moye",
-      "id": "test_member_1790677481292",
+      "maritalStatus": "Married",
+      "sex": "Female",
       "lastName": "SiaraMaina",
-      "motherId": "",
-      "honorific": "Modern Lineage Elder",
+      "spouseId": "",
       "occupation": "Senior Informatics Archivist",
       "branchType": "heritage",
-      "firstName": "Amani",
-      "spouseId": "",
+      "motherId": "",
+      "birthPeriod": "Late 20th Century",
+      "id": "test_member_1790677462465",
+      "updatedAt": "2026-09-29T10:24:46.551Z"
+    },
+    {
       "maritalStatus": "Married",
-      "siblingIds": [],
-      "fatherId": "ngowi1",
-      "updatedAt": "2026-09-29T10:24:41.313Z",
+      "honorific": "Modern Lineage Elder",
+      "lastName": "SiaraMaina",
+      "id": "test_member_1790677481292",
+      "firstName": "Amani",
+      "motherId": "",
+      "spouseId": "",
+      "occupation": "Senior Informatics Archivist",
+      "branchType": "heritage",
+      "narrative": "Real-time permanence verification test member.",
+      "sex": "Female",
       "deceased": false,
       "dob": "1988-04-12",
-      "middleName": "Kileo",
       "location": "Dar es Salaam, Tanzania",
-      "birthPeriod": "Late 20th Century"
+      "birthPeriod": "Late 20th Century",
+      "siblingIds": [],
+      "updatedAt": "2026-09-29T10:24:41.313Z",
+      "middleName": "Kileo",
+      "fatherId": "ngowi1",
+      "placeOfBirth": "Marangu Moye"
     }
   ]
 }
