@@ -1,7 +1,44 @@
 {
   "project": "SiaraMaina Clan Informatics",
-  "exportedAt": "2026-10-10T14:17:45.075Z",
-  "count": 0,
+  "exportedAt": "2026-10-10T15:16:26.098Z",
+  "count": 1,
   "lastPublishedBy": "Deodatus Maliti",
-  "records": []
+  "records": [
+    {
+      "id": "rec-1791645384775-9jvjx",
+      "firstName": "Researchlink",
+      "middleName": "",
+      "lastName": "International",
+      "sex": "Male",
+      "branchType": "heritage",
+      "honorific": "",
+      "dob": "",
+      "birthPeriod": "",
+      "placeOfBirth": "",
+      "deceased": false,
+      "dod": "",
+      "deathAge": "",
+      "causeOfDeath": "Not Recorded",
+      "fatherId": "",
+      "motherId": "",
+      "spouseId": "",
+      "siblingIds": [],
+      "maritalStatus": "Not Recorded",
+      "education": "Not Recorded",
+      "course": "",
+      "employment": "Not Recorded",
+      "occupation": "",
+      "organization": "ResearchLink International",
+      "religion": "Not Recorded",
+      "denomination": "",
+      "phone": "",
+      "whatsapp": "",
+      "email": "",
+      "location": "",
+      "narrative": "",
+      "photo": "",
+      "v": 1,
+      "updatedAt": "2026-10-10T15:16:25.081Z"
+    }
+  ]
 }
