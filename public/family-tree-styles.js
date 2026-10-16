@@ -1,23 +1,68 @@
 /**
  * SiaraMaina Clan Platform - 6 Distinct Classical Family Tree Styles
  * ------------------------------------------------------------------------
- * 1. classical-collapsible: Interactive Collapsible Classical Tree
- * 2. classical-rounded:     Rounded-Node Classical Tree (Pill Nodes with Curved Connectors)
- * 3. classical-square:      Square/Rectangular-Node Classical Tree (Crisp Cards & Orthogonal Elbows)
- * 4. classical-compact:     Compact Classical Tree (High-Density Multi-Generation Overview)
- * 5. classical-ltr:         Left-to-Right Classical Tree (Horizontal Ancestry Lineage Flow)
- * 6. classical-radial:      Radial Classical Tree (Concentric Radiating Generational Rings with Non-Intermingling Labels)
+ * All remaining 5 family tree styles now strictly follow the exact same card
+ * contents and interactive collapsible system as Style 1 (Interactive Collapsible
+ * Classical Tree - Original):
+ *
+ * 1. classical-collapsible: Interactive Collapsible Classical Tree (Original in index.html)
+ * 2. classical-rounded:     Rounded-Node Classical Tree (Smooth curved pill nodes)
+ * 3. classical-square:      Square/Rectangular-Node Classical Tree (Crisp cards & orthogonal elbows)
+ * 4. classical-compact:     Compact Classical Tree (High-density multi-generation overview)
+ * 5. classical-ltr:         Left-to-Right Classical Tree (Horizontal lineage ancestry flow)
+ * 6. classical-radial:      Radial Classical Tree (Concentric generational ring tree with full upright cards)
+ *
+ * Card Contents System (Identical to Style 1):
+ * - Pure white background card with 2px branch-colored border stroke
+ * - Branch left accent bar / header indicator
+ * - Round member picture (or empty placeholder with dashed border, initials, and 📷 camera badge)
+ * - Line 1: Full Member Name (bold, 11.5px, #103d2b, truncated with … if long)
+ * - Line 2: Generation ("Gen X") (9.5px, #64748b)
+ * - Line 3: Dates (Born / Died / Age) ("Born: ... • Died: ... (X yrs)" or "Born: ... • Age Y")
+ * - Line 4: Status ("🕊️ Deceased Ancestor" or "💍 Spouse • 🟢 Living" or "🟢 Living Member")
+ * - Interactive Expand / Collapse Pill Button (+count when collapsed, − when expanded)
+ * - Card Click opens member profile / detail modal
+ * - Standard CSS classes (.d3-node-group, .d3-node-card-bg, .d3-tree-link, .d3-tree-svg)
+ *   ensuring complete compatibility with Export Studio and High-Res print engines.
  */
 
 (function(window) {
   'use strict';
 
-  // Branch Color Palette Constants
+  // Branch Color Palette Constants matching Style 1
   var BRANCH_COLORS = {
-    heritage: { hex: 0xe9bf52, css: '#e9bf52', text: '#0a291d', label: 'Foundational Roots', bg: '#fefce8', border: '#fef08a' },
-    siara:    { hex: 0x103d2b, css: '#103d2b', text: '#ffffff', label: 'Siara Branch', bg: '#f0fdf4', border: '#bbf7d0' },
-    maina:    { hex: 0xb45309, css: '#b45309', text: '#ffffff', label: 'Maina Branch', bg: '#fffbeb', border: '#fde68a' },
-    maliti:   { hex: 0x0d9488, css: '#0d9488', text: '#ffffff', label: 'Maliti Family', bg: '#f0fdfa', border: '#99f6e4' }
+    siara: {
+      stroke: '#176d8c',
+      accent: '#176d8c',
+      ring: '#0284c7',
+      bg: '#e0f2fe',
+      css: '#176d8c',
+      label: 'Siara Branch'
+    },
+    maina: {
+      stroke: '#98591f',
+      accent: '#98591f',
+      ring: '#b45309',
+      bg: '#fef3c7',
+      css: '#98591f',
+      label: 'Maina Branch'
+    },
+    maliti: {
+      stroke: '#713b20',
+      accent: '#713b20',
+      ring: '#9a3412',
+      bg: '#ffedd5',
+      css: '#713b20',
+      label: 'Maliti Family'
+    },
+    heritage: {
+      stroke: '#e9bf52',
+      accent: '#e9bf52',
+      ring: '#ca8a04',
+      bg: '#fef9c3',
+      css: '#e9bf52',
+      label: 'Foundational Roots'
+    }
   };
 
   function getBranchColor(branchType) {
@@ -44,7 +89,7 @@
   }
   window.cleanupCurrentTreeRenderer = cleanupTreeCanvas;
 
-  // Safe helper to open profile
+  // Safe helper to open profile or modal
   function triggerMemberProfile(d) {
     var id = (d && d.data && d.data.id) ? d.data.id : (d && d.id ? d.id : null);
     var record = (d && d.data && d.data.record) ? d.data.record : (d && d.record ? d.record : null);
@@ -58,6 +103,317 @@
     }
   }
 
+  // Safe helper to format member full name
+  function getMemberFullName(rec, fallback) {
+    if (!rec) return fallback || "Clan Member";
+    if (typeof window.fullName === "function") return window.fullName(rec);
+    var name = ((rec.firstName || "") + " " + (rec.lastName || "")).trim();
+    return name || rec.name || fallback || "Clan Member";
+  }
+
+  // Safe helper to format member initials
+  function getMemberInitials(rec, fallbackName) {
+    if (rec && typeof window.initials === "function") {
+      var init = window.initials(rec);
+      if (init) return init;
+    }
+    var name = getMemberFullName(rec, fallbackName);
+    var parts = name.split(" ").filter(Boolean);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return (name[0] || "👤").toUpperCase();
+  }
+
+  // Safe helper to compute age
+  function getMemberAge(rec, endDate) {
+    if (typeof window.calculateAge === "function") {
+      return window.calculateAge(rec, endDate);
+    }
+    return null;
+  }
+
+  // Extract comprehensive card data following Style 1's system
+  function getCardData(d) {
+    var rec = (d && d.data && d.data.record) ? d.data.record : {};
+    var rawName = d.data.name || getMemberFullName(rec, "Clan Member");
+    var displayName = rawName.length > 36 ? rawName.substring(0, 34) + "…" : rawName;
+
+    // Generation
+    var genNum = d.data.generation !== undefined ? d.data.generation : (rec.generation || 1);
+    var genText = "Gen " + genNum;
+
+    // Dates (Born / Died / Age)
+    var dobStr = rec.dob || rec.birthPeriod || d.data.birthPeriod || "";
+    var dodStr = rec.dod || d.data.deathPeriod || "";
+    var datesText = "";
+    if (rec.deceased || d.data.isDeceased || dodStr) {
+      var ageDeath = getMemberAge(rec, rec.dod || dodStr);
+      datesText = "Born: " + (dobStr || "Unknown") + " • Died: " + (dodStr || "Unknown") + (ageDeath !== null ? " (" + ageDeath + " yrs)" : "");
+    } else {
+      var ageLiving = getMemberAge(rec, "");
+      datesText = "Born: " + (dobStr || "Unknown") + (ageLiving !== null ? " • Age " + ageLiving : "");
+    }
+
+    // Status Line
+    var isDeceased = !!(rec.deceased || d.data.isDeceased || dodStr);
+    var statusText = "";
+    var statusColor = isDeceased ? "#94a3b8" : "#059669";
+    if (isDeceased) {
+      statusText = "🕊️ Deceased Ancestor";
+    } else if (d.data.spouse) {
+      var spName = d.data.spouse.firstName || getMemberFullName(d.data.spouse, "Spouse");
+      statusText = "💍 " + spName + " • 🟢 Living";
+    } else {
+      statusText = "🟢 Living Member";
+    }
+
+    // Branch configuration
+    var bKey = (d.data.branch || rec.branchType || "heritage").toLowerCase();
+    var branchCfg = BRANCH_COLORS[bKey] || BRANCH_COLORS.heritage;
+
+    // Photo & Initials
+    var photoUrl = (rec.photo || rec.storedPhoto || rec.photoFile || d.data.photo || "").trim();
+    var initials = getMemberInitials(rec, rawName);
+
+    // Collapsible Children Info
+    var childrenCount = d._children ? d._children.length : (d.children ? d.children.length : (d.data.childrenCount || 0));
+    var hasChildren = childrenCount > 0 || (d.children && d.children.length > 0) || (d._children && d._children.length > 0);
+
+    return {
+      rawName: rawName,
+      displayName: displayName,
+      genText: genText,
+      datesText: datesText,
+      statusText: statusText,
+      statusColor: statusColor,
+      isDeceased: isDeceased,
+      photoUrl: photoUrl,
+      initials: initials,
+      branch: branchCfg,
+      branchKey: bKey,
+      hasChildren: hasChildren,
+      childrenCount: childrenCount
+    };
+  }
+
+  /**
+   * Universal Classical Card Content Appender
+   * Injects the exact card contents and interactive toggle button from Style 1
+   */
+  function buildClassicalCard(nodeEnter, defs, options) {
+    var nodeWidth = options.width || 280;
+    var nodeHeight = options.height || 98;
+    var rx = options.rx !== undefined ? options.rx : 10;
+    var ry = options.ry !== undefined ? options.ry : 10;
+    var togglePos = options.togglePosition || "bottom"; // "bottom" | "right"
+    var clipPrefix = options.clipPrefix || "style";
+
+    // 1. Card Background - Pure white fill with 2px branch-colored border stroke
+    nodeEnter.append("rect")
+      .attr("class", "d3-node-card-bg")
+      .attr("x", -nodeWidth / 2)
+      .attr("y", -nodeHeight / 2)
+      .attr("width", nodeWidth)
+      .attr("height", nodeHeight)
+      .attr("rx", rx)
+      .attr("ry", ry)
+      .attr("fill", "#ffffff")
+      .attr("stroke", function(d) {
+        return getCardData(d).branch.stroke;
+      })
+      .attr("stroke-width", "2px")
+      .style("filter", "drop-shadow(0 3px 8px rgba(0,0,0,0.06))");
+
+    // 2. Branch Left Accent Bar
+    nodeEnter.append("path")
+      .attr("d", function(d) {
+        var r = Math.min(rx, 10);
+        return "M " + (-nodeWidth/2) + " " + (-nodeHeight/2 + r) + 
+               " A " + r + " " + r + " 0 0 1 " + (-nodeWidth/2 + r) + " " + (-nodeHeight/2) + 
+               " L " + (-nodeWidth/2 + 8) + " " + (-nodeHeight/2) + 
+               " L " + (-nodeWidth/2 + 8) + " " + (nodeHeight/2) + 
+               " L " + (-nodeWidth/2 + r) + " " + (nodeHeight/2) + 
+               " A " + r + " " + r + " 0 0 1 " + (-nodeWidth/2) + " " + (nodeHeight/2 - r) + " Z";
+      })
+      .attr("fill", function(d) {
+        return getCardData(d).branch.accent;
+      });
+
+    // Optional top header strip for square style
+    if (options.hasSquareHeaderStrip) {
+      nodeEnter.append("path")
+        .attr("d", function(d) {
+          return "M " + (-nodeWidth/2) + " " + (-nodeHeight/2 + 4) +
+                 " A 4 4 0 0 1 " + (-nodeWidth/2 + 4) + " " + (-nodeHeight/2) +
+                 " L " + (nodeWidth/2 - 4) + " " + (-nodeHeight/2) +
+                 " A 4 4 0 0 1 " + (nodeWidth/2) + " " + (-nodeHeight/2 + 4) +
+                 " L " + (nodeWidth/2) + " " + (-nodeHeight/2 + 18) +
+                 " L " + (-nodeWidth/2) + " " + (-nodeHeight/2 + 18) + " Z";
+        })
+        .attr("fill", function(d) {
+          return getCardData(d).branch.accent;
+        });
+
+      nodeEnter.append("text")
+        .attr("x", -nodeWidth/2 + 12)
+        .attr("y", -nodeHeight/2 + 13)
+        .attr("fill", "#ffffff")
+        .attr("font-size", "9.5px")
+        .attr("font-weight", "800")
+        .text(function(d) {
+          var data = getCardData(d);
+          return data.branch.label + " • " + data.genText;
+        });
+    }
+
+    // 3. Round Member Picture / Empty Photo Placeholder
+    var avatarG = nodeEnter.append("g")
+      .attr("transform", "translate(" + (-nodeWidth/2 + 32) + ", " + (options.hasSquareHeaderStrip ? 10 : 0) + ")");
+
+    avatarG.each(function(d) {
+      var el = d3.select(this);
+      var data = getCardData(d);
+
+      if (data.photoUrl) {
+        // Member HAS photo -> SVG image clipped in round frame
+        var cleanId = String(d.data.id).replace(/[^a-zA-Z0-9_-]/g, "_");
+        var clipId = "clip_" + clipPrefix + "_" + cleanId;
+        defs.append("clipPath")
+          .attr("id", clipId)
+          .append("circle")
+          .attr("cx", 0)
+          .attr("cy", 0)
+          .attr("r", 20);
+
+        el.append("image")
+          .attr("href", data.photoUrl)
+          .attr("x", -20)
+          .attr("y", -20)
+          .attr("width", 40)
+          .attr("height", 40)
+          .attr("preserveAspectRatio", "xMidYMid slice")
+          .attr("clip-path", "url(#" + clipId + ")");
+
+        el.append("circle")
+          .attr("r", 20)
+          .attr("fill", "none")
+          .attr("stroke", data.branch.ring)
+          .attr("stroke-width", 2);
+      } else {
+        // Member HAS NO photo -> Empty round placeholder ready for photo
+        el.append("circle")
+          .attr("r", 20)
+          .attr("fill", data.branch.bg)
+          .attr("stroke", data.branch.ring)
+          .attr("stroke-width", 1.8)
+          .attr("stroke-dasharray", "3,2");
+
+        el.append("text")
+          .attr("text-anchor", "middle")
+          .attr("dy", "0.35em")
+          .attr("font-size", "11px")
+          .attr("font-weight", "900")
+          .attr("fill", "#103d2b")
+          .text(data.initials);
+
+        // Small camera icon badge indicating photo placeholder
+        var badgeG = el.append("g").attr("transform", "translate(13, 13)");
+        badgeG.append("circle")
+          .attr("r", 6.5)
+          .attr("fill", "#ffffff")
+          .attr("stroke", data.branch.ring)
+          .attr("stroke-width", 1);
+
+        badgeG.append("text")
+          .attr("text-anchor", "middle")
+          .attr("dy", "0.35em")
+          .attr("font-size", "7px")
+          .text("📷");
+      }
+    });
+
+    var textLeft = -nodeWidth/2 + 60;
+    var yBase = options.hasSquareHeaderStrip ? (-nodeHeight/2 + 34) : (-nodeHeight/2 + 20);
+
+    // 4. Line 1: Member Name
+    nodeEnter.append("text")
+      .attr("x", textLeft)
+      .attr("y", yBase)
+      .attr("font-size", "11.5px")
+      .attr("font-weight", "900")
+      .attr("fill", "#103d2b")
+      .text(function(d) {
+        return getCardData(d).displayName;
+      });
+
+    // 5. Line 2: Generation Subtitle
+    nodeEnter.append("text")
+      .attr("x", textLeft)
+      .attr("y", yBase + 16)
+      .attr("font-size", "9.5px")
+      .attr("font-weight", "700")
+      .attr("fill", "#64748b")
+      .text(function(d) {
+        return getCardData(d).genText;
+      });
+
+    // 6. Line 3: Dates (Born / Died / Age)
+    nodeEnter.append("text")
+      .attr("x", textLeft)
+      .attr("y", yBase + 32)
+      .attr("font-size", "9px")
+      .attr("font-weight", "700")
+      .attr("fill", "#475569")
+      .text(function(d) {
+        return getCardData(d).datesText;
+      });
+
+    // 7. Line 4: Status Line (🕊️ Deceased / 💍 Spouse • 🟢 Living / 🟢 Living)
+    nodeEnter.append("text")
+      .attr("x", textLeft)
+      .attr("y", yBase + 48)
+      .attr("font-size", "9px")
+      .attr("font-weight", "800")
+      .attr("fill", function(d) {
+        return getCardData(d).statusColor;
+      })
+      .text(function(d) {
+        return getCardData(d).statusText;
+      });
+
+    // 8. Expand / Collapse Pill Button (+count / −)
+    var toggleG = nodeEnter.append("g")
+      .attr("class", "d3-node-toggle-btn")
+      .attr("transform", function() {
+        if (togglePos === "right") {
+          return "translate(" + (nodeWidth/2 - 12) + ", 0)";
+        }
+        return "translate(0, " + (nodeHeight/2) + ")";
+      })
+      .style("cursor", "pointer")
+      .style("display", function(d) {
+        var data = getCardData(d);
+        return data.hasChildren ? "inline" : "none";
+      });
+
+    toggleG.append("circle")
+      .attr("r", 10)
+      .attr("fill", "#103d2b")
+      .attr("stroke", "#ffffff")
+      .attr("stroke-width", 2);
+
+    toggleG.append("text")
+      .attr("text-anchor", "middle")
+      .attr("dy", "0.35em")
+      .attr("font-size", "10px")
+      .attr("font-weight", "900")
+      .attr("fill", "#ffffff")
+      .text(function(d) {
+        return d._children ? "+" + (d._children.length || d.data.childrenCount) : (d.children ? "−" : "");
+      });
+  }
+
   // Common Search & Spotlight bar for all classical trees
   function createTreeSearchPanel(wrapper, d3Root, onSelectMember, currentRootRecord) {
     var searchPanel = wrapper.append("div")
@@ -66,34 +422,39 @@
       .style("align-items", "center")
       .style("gap", "10px")
       .style("padding", "8px 12px")
-      .style("background", "rgba(255,255,255,0.94)")
+      .style("background", "rgba(255,255,255,0.95)")
       .style("backdrop-filter", "blur(8px)")
       .style("border-bottom", "1px solid var(--line)")
-      .style("flex-wrap", "wrap");
+      .style("flex-wrap", "wrap")
+      .style("position", "relative")
+      .style("z-index", "10");
 
     searchPanel.append("span").style("font-size", "1rem").text("🔍");
 
     searchPanel.append("input")
       .attr("type", "search")
       .attr("class", "d3-tree-search-input")
-      .attr("placeholder", "Search member in tree...")
+      .attr("placeholder", "Search member in tree (e.g. Siara)...")
+      .attr("id", "d3TreeSearchInput")
       .style("padding", "6px 12px")
       .style("border", "1px solid var(--line)")
       .style("border-radius", "6px")
       .style("font-size", "0.8rem")
-      .style("min-width", "200px")
+      .style("min-width", "220px")
       .style("flex", "1")
       .on("input", function() {
         var val = this.value.trim().toLowerCase();
         if (!val) {
-          d3.selectAll(".classical-node").classed("node-selected", false);
+          d3.selectAll(".d3-node-group").classed("node-selected", false);
+          d3.selectAll(".d3-tree-link").classed("link-highlight", false);
           return;
         }
         var matchNode = null;
         d3Root.each(function(d) {
           var name = (d.data.name || "").toLowerCase();
           var clanNum = (d.data.clanNumber || "").toLowerCase();
-          if ((name.indexOf(val) !== -1 || clanNum.indexOf(val) !== -1) && !matchNode) {
+          var phone = (d.data.record && d.data.record.phone) ? String(d.data.record.phone).toLowerCase() : "";
+          if ((name.indexOf(val) !== -1 || clanNum.indexOf(val) !== -1 || phone.indexOf(val) !== -1) && !matchNode) {
             matchNode = d;
           }
         });
@@ -133,6 +494,25 @@
     return searchPanel;
   }
 
+  // Safe helper to obtain hierarchy data
+  function getTreeHierarchyData(rootRecord, filterBranch) {
+    if (typeof window.buildD3HierarchyData === "function") {
+      return window.buildD3HierarchyData(rootRecord, filterBranch);
+    }
+    return null;
+  }
+
+  // Helper to toggle node collapse/expand
+  function toggleSubtree(d) {
+    if (d.children) {
+      d._children = d.children;
+      d.children = null;
+    } else if (d._children) {
+      d.children = d._children;
+      d._children = null;
+    }
+  }
+
   // =========================================================================
   // 2. ROUNDED-NODE CLASSICAL TREE (Pill Nodes & Smooth Curved Connectors)
   // =========================================================================
@@ -146,10 +526,7 @@
       return;
     }
 
-    var hierarchyData = (typeof window.buildD3HierarchyData === "function")
-      ? window.buildD3HierarchyData(rootRecord, filterBranch)
-      : null;
-
+    var hierarchyData = getTreeHierarchyData(rootRecord, filterBranch);
     if (!hierarchyData) {
       container.innerHTML = '<div class="empty">No genealogical records found for the selected branch.</div>';
       return;
@@ -159,29 +536,36 @@
       .attr("class", "d3-tree-container")
       .attr("id", "d3TreeWrapper")
       .style("width", "100%")
-      .style("height", "680px")
+      .style("height", "100%")
+      .style("min-height", "680px")
       .style("position", "relative")
       .style("overflow", "hidden")
       .style("background", "linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)");
 
-    var d3Root = d3.hierarchy(hierarchyData);
-    var nodeWidth = 220;
-    var nodeHeight = 64;
+    var d3Root = d3.hierarchy(hierarchyData, function(d) { return d.children; });
+    window.d3TreeDataRoot = d3Root;
+    var nodeWidth = 280;
+    var nodeHeight = 98;
+    var rx = 18;
+    var ry = 18;
+
+    d3Root.x0 = (container.clientWidth || 1000) / 2;
+    d3Root.y0 = 60;
 
     var treeLayout = d3.tree().nodeSize([nodeWidth + 40, nodeHeight + 80]);
-    treeLayout(d3Root);
 
     var svg = wrapper.append("svg")
+      .attr("class", "d3-tree-svg")
+      .attr("id", "d3TreeSvg")
       .attr("width", "100%")
       .attr("height", "100%")
       .style("display", "block")
       .style("cursor", "grab");
 
     var defs = svg.append("defs");
-
-    var g = svg.append("g");
-    var gLink = g.append("g").attr("class", "links-layer");
-    var gNode = g.append("g").attr("class", "nodes-layer");
+    var g = svg.append("g").attr("class", "d3-main-group");
+    var gLink = g.append("g").attr("class", "d3-links-layer");
+    var gNode = g.append("g").attr("class", "d3-nodes-layer");
 
     var zoom = d3.zoom()
       .scaleExtent([0.15, 3])
@@ -197,157 +581,115 @@
     window._treeD3Svg = svg;
 
     createTreeSearchPanel(wrapper, d3Root, function(matchNode) {
-      d3.selectAll(".classical-node").classed("node-selected", false);
-      var sel = d3.select("#node_rounded_" + matchNode.data.id);
+      d3.selectAll(".d3-node-group").classed("node-selected", false);
+      var sel = d3.select("#d3Node_" + matchNode.data.id);
       sel.classed("node-selected", true);
       var scale = 1.1;
       var w = container.clientWidth || 900;
       svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity.translate(w/2 - matchNode.x * scale, 120 - matchNode.y * scale).scale(scale));
     }, rootRecord);
 
-    // Smooth cubic bezier curved connectors
-    gLink.selectAll("path")
-      .data(d3Root.links())
-      .enter()
-      .append("path")
-      .attr("d", d3.linkVertical()
-        .x(function(d) { return d.x; })
-        .y(function(d) { return d.y; })
-      )
-      .attr("fill", "none")
-      .attr("stroke", function(d) {
-        var bc = getBranchColor(d.target.data.branch);
-        return bc.css;
-      })
-      .attr("stroke-width", 2)
-      .attr("stroke-opacity", 0.65);
+    function updateTree(source, duration) {
+      duration = duration !== undefined ? duration : 400;
+      treeLayout(d3Root);
 
-    // Nodes (Pill shape with smooth rounded corners)
-    var nodes = gNode.selectAll(".classical-node")
-      .data(d3Root.descendants())
-      .enter()
-      .append("g")
-      .attr("class", "classical-node")
-      .attr("id", function(d) { return "node_rounded_" + d.data.id; })
-      .attr("transform", function(d) { return "translate(" + (d.x - nodeWidth / 2) + "," + (d.y - nodeHeight / 2) + ")"; })
-      .style("cursor", "pointer")
-      .on("click", function(event, d) {
-        triggerMemberProfile(d);
+      var nodes = d3Root.descendants();
+      var links = d3Root.links();
+
+      // --- Links ---
+      var link = gLink.selectAll(".d3-tree-link")
+        .data(links, function(d) { return d.target.data.id; });
+
+      var linkEnter = link.enter().append("path")
+        .attr("class", function(d) {
+          return "d3-tree-link branch-" + (d.target.data.branch || "heritage");
+        })
+        .attr("fill", "none")
+        .attr("stroke", function(d) {
+          return getBranchColor(d.target.data.branch).stroke;
+        })
+        .attr("stroke-width", "2.5px")
+        .attr("stroke-opacity", "0.75")
+        .attr("d", function() {
+          var o = { x: source.x0 || 0, y: source.y0 || 0 };
+          return d3.linkVertical()({ source: o, target: o });
+        });
+
+      link.merge(linkEnter).transition().duration(duration)
+        .attr("d", d3.linkVertical().x(function(d) { return d.x; }).y(function(d) { return d.y; }))
+        .attr("stroke", function(d) { return getBranchColor(d.target.data.branch).stroke; });
+
+      link.exit().transition().duration(duration)
+        .attr("d", function() {
+          var o = { x: source.x || 0, y: source.y || 0 };
+          return d3.linkVertical()({ source: o, target: o });
+        })
+        .remove();
+
+      // --- Nodes ---
+      var node = gNode.selectAll(".d3-node-group")
+        .data(nodes, function(d) { return d.data.id; });
+
+      var nodeEnter = node.enter().append("g")
+        .attr("class", function(d) {
+          return "d3-node-group branch-" + (d.data.branch || "heritage");
+        })
+        .attr("id", function(d) { return "d3Node_" + d.data.id; })
+        .attr("transform", function() {
+          return "translate(" + (source.x0 || 0) + "," + (source.y0 || 0) + ")";
+        })
+        .style("cursor", "pointer")
+        .on("click", function(event, d) {
+          if (event.target && event.target.closest && event.target.closest(".d3-node-toggle-btn")) {
+            toggleSubtree(d);
+            updateTree(d, 400);
+            return;
+          }
+          triggerMemberProfile(d);
+        });
+
+      buildClassicalCard(nodeEnter, defs, {
+        width: nodeWidth,
+        height: nodeHeight,
+        rx: rx,
+        ry: ry,
+        togglePosition: "bottom",
+        clipPrefix: "rnd"
       });
 
-    // Pill background
-    nodes.append("rect")
-      .attr("width", nodeWidth)
-      .attr("height", nodeHeight)
-      .attr("rx", 32)
-      .attr("ry", 32)
-      .attr("fill", "#ffffff")
-      .attr("stroke", function(d) { return getBranchColor(d.data.branch).css; })
-      .attr("stroke-width", 2)
-      .style("filter", "drop-shadow(0 4px 10px rgba(0,0,0,0.06))");
+      var nodeUpdate = node.merge(nodeEnter).transition().duration(duration)
+        .attr("transform", function(d) {
+          return "translate(" + d.x + "," + d.y + ")";
+        });
 
-    // Avatar / Round Picture Placeholder
-    nodes.each(function(d) {
-      var nodeEl = d3.select(this);
-      var rec = d.data.record || {};
-      var photoUrl = rec.photo && String(rec.photo).trim();
-      var branch = getBranchColor(d.data.branch);
-      var avatarG = nodeEl.append("g").attr("transform", "translate(32, 32)");
+      nodeUpdate.select(".d3-node-card-bg")
+        .attr("stroke", function(d) {
+          if (d.selected) return "var(--gold)";
+          return getCardData(d).branch.stroke;
+        });
 
-      if (photoUrl) {
-        var clipId = "clip_rnd_" + d.data.id.replace(/[^a-zA-Z0-9_-]/g, "_");
-        defs.append("clipPath")
-          .attr("id", clipId)
-          .append("circle")
-          .attr("cx", 0)
-          .attr("cy", 0)
-          .attr("r", 22);
+      nodeUpdate.select(".d3-node-toggle-btn text")
+        .text(function(d) {
+          return d._children ? "+" + (d._children.length || d.data.childrenCount) : (d.children ? "−" : "");
+        });
 
-        avatarG.append("image")
-          .attr("href", photoUrl)
-          .attr("x", -22)
-          .attr("y", -22)
-          .attr("width", 44)
-          .attr("height", 44)
-          .attr("preserveAspectRatio", "xMidYMid slice")
-          .attr("clip-path", "url(#" + clipId + ")");
+      node.exit().transition().duration(duration)
+        .attr("transform", function() {
+          return "translate(" + (source.x || 0) + "," + (source.y || 0) + ")";
+        })
+        .remove();
 
-        avatarG.append("circle")
-          .attr("r", 22)
-          .attr("fill", "none")
-          .attr("stroke", branch.css)
-          .attr("stroke-width", 2);
-      } else {
-        avatarG.append("circle")
-          .attr("r", 22)
-          .attr("fill", branch.bg)
-          .attr("stroke", branch.css)
-          .attr("stroke-width", 1.8)
-          .attr("stroke-dasharray", "3,2");
-
-        var initialsText = "?";
-        var n = d.data.name || "";
-        var parts = n.split(" ").filter(Boolean);
-        initialsText = parts.length >= 2 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : (n[0] || "?").toUpperCase();
-
-        avatarG.append("text")
-          .attr("text-anchor", "middle")
-          .attr("dy", "0.35em")
-          .attr("fill", branch.css)
-          .style("font-size", "11px")
-          .style("font-weight", "900")
-          .text(initialsText);
-
-        var badgeG = avatarG.append("g").attr("transform", "translate(14, 14)");
-        badgeG.append("circle")
-          .attr("r", 6)
-          .attr("fill", "#ffffff")
-          .attr("stroke", branch.css)
-          .attr("stroke-width", 1);
-        badgeG.append("text")
-          .attr("text-anchor", "middle")
-          .attr("dy", "0.35em")
-          .style("font-size", "6.5px")
-          .text("📷");
-      }
-    });
-
-    // Name text
-    nodes.append("text")
-      .attr("x", 64)
-      .attr("y", 26)
-      .attr("fill", "#0f172a")
-      .style("font-size", "12px")
-      .style("font-weight", "800")
-      .text(function(d) {
-        var n = d.data.name || "";
-        return n.length > 18 ? n.slice(0, 16) + "…" : n;
+      d3Root.each(function(d) {
+        d.x0 = d.x;
+        d.y0 = d.y;
       });
+    }
 
-    // Subtitle (Generation, DOB / DOD / Current Age)
-    nodes.append("text")
-      .attr("x", 64)
-      .attr("y", 44)
-      .attr("fill", "#64748b")
-      .style("font-size", "9.5px")
-      .style("font-weight", "600")
-      .text(function(d) {
-        var rec = d.data.record || {};
-        var gen = d.data.generation !== undefined ? "Gen " + d.data.generation : "";
-        var dobStr = rec.dob || rec.birthPeriod || "";
-        var dodStr = rec.dod || "";
-        if (rec.deceased || dodStr) {
-          var ageDeath = (typeof window.calculateAge === "function") ? window.calculateAge(rec, rec.dod) : null;
-          return gen + " • Born: " + (dobStr || "Unknown") + " • Died: " + (dodStr || "Unknown") + (ageDeath !== null ? " (" + ageDeath + " yrs)" : "");
-        }
-        var ageLiving = (typeof window.calculateAge === "function") ? window.calculateAge(rec, "") : null;
-        return gen + " • Born: " + (dobStr || "Unknown") + (ageLiving !== null ? " • Age " + ageLiving : "") + " • 🟢 Living";
-      });
+    updateTree(d3Root, 0);
 
-    // Initial Fit to Screen
     setTimeout(function() {
       if (typeof window.fitTreeToWidth === "function") window.fitTreeToWidth();
-    }, 50);
+    }, 60);
   };
 
   // =========================================================================
@@ -363,10 +705,7 @@
       return;
     }
 
-    var hierarchyData = (typeof window.buildD3HierarchyData === "function")
-      ? window.buildD3HierarchyData(rootRecord, filterBranch)
-      : null;
-
+    var hierarchyData = getTreeHierarchyData(rootRecord, filterBranch);
     if (!hierarchyData) {
       container.innerHTML = '<div class="empty">No genealogical records found for the selected branch.</div>';
       return;
@@ -376,29 +715,36 @@
       .attr("class", "d3-tree-container")
       .attr("id", "d3TreeWrapper")
       .style("width", "100%")
-      .style("height", "680px")
+      .style("height", "100%")
+      .style("min-height", "680px")
       .style("position", "relative")
       .style("overflow", "hidden")
       .style("background", "#fafaf9");
 
-    var d3Root = d3.hierarchy(hierarchyData);
-    var nodeWidth = 230;
-    var nodeHeight = 84;
+    var d3Root = d3.hierarchy(hierarchyData, function(d) { return d.children; });
+    window.d3TreeDataRoot = d3Root;
+    var nodeWidth = 280;
+    var nodeHeight = 104;
+    var rx = 4;
+    var ry = 4;
 
-    var treeLayout = d3.tree().nodeSize([nodeWidth + 50, nodeHeight + 80]);
-    treeLayout(d3Root);
+    d3Root.x0 = (container.clientWidth || 1000) / 2;
+    d3Root.y0 = 60;
+
+    var treeLayout = d3.tree().nodeSize([nodeWidth + 40, nodeHeight + 84]);
 
     var svg = wrapper.append("svg")
+      .attr("class", "d3-tree-svg")
+      .attr("id", "d3TreeSvg")
       .attr("width", "100%")
       .attr("height", "100%")
       .style("display", "block")
       .style("cursor", "grab");
 
     var defs = svg.append("defs");
-
-    var g = svg.append("g");
-    var gLink = g.append("g").attr("class", "links-layer");
-    var gNode = g.append("g").attr("class", "nodes-layer");
+    var g = svg.append("g").attr("class", "d3-main-group");
+    var gLink = g.append("g").attr("class", "d3-links-layer");
+    var gNode = g.append("g").attr("class", "d3-nodes-layer");
 
     var zoom = d3.zoom()
       .scaleExtent([0.15, 3])
@@ -414,171 +760,128 @@
     window._treeD3Svg = svg;
 
     createTreeSearchPanel(wrapper, d3Root, function(matchNode) {
-      d3.selectAll(".classical-node").classed("node-selected", false);
-      var sel = d3.select("#node_square_" + matchNode.data.id);
+      d3.selectAll(".d3-node-group").classed("node-selected", false);
+      var sel = d3.select("#d3Node_" + matchNode.data.id);
       sel.classed("node-selected", true);
       var scale = 1.1;
       var w = container.clientWidth || 900;
       svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity.translate(w/2 - matchNode.x * scale, 120 - matchNode.y * scale).scale(scale));
     }, rootRecord);
 
-    // Orthogonal right-angle elbow connector step links
-    gLink.selectAll("path")
-      .data(d3Root.links())
-      .enter()
-      .append("path")
-      .attr("d", function(d) {
-        var sx = d.source.x;
-        var sy = d.source.y + nodeHeight / 2;
-        var tx = d.target.x;
-        var ty = d.target.y - nodeHeight / 2;
-        var midY = (sy + ty) / 2;
-        return "M " + sx + " " + sy +
-               " L " + sx + " " + midY +
-               " L " + tx + " " + midY +
-               " L " + tx + " " + ty;
-      })
-      .attr("fill", "none")
-      .attr("stroke", "#475569")
-      .attr("stroke-width", 1.8)
-      .attr("stroke-opacity", 0.7);
+    function elbowConnector(s, t) {
+      var sx = s.x;
+      var sy = s.y + nodeHeight / 2;
+      var tx = t.x;
+      var ty = t.y - nodeHeight / 2;
+      var midY = (sy + ty) / 2;
+      return "M " + sx + " " + sy +
+             " L " + sx + " " + midY +
+             " L " + tx + " " + midY +
+             " L " + tx + " " + ty;
+    }
 
-    // Nodes (Sharp card with header strip & round picture placeholder)
-    var nodes = gNode.selectAll(".classical-node")
-      .data(d3Root.descendants())
-      .enter()
-      .append("g")
-      .attr("class", "classical-node")
-      .attr("id", function(d) { return "node_square_" + d.data.id; })
-      .attr("transform", function(d) { return "translate(" + (d.x - nodeWidth / 2) + "," + (d.y - nodeHeight / 2) + ")"; })
-      .style("cursor", "pointer")
-      .on("click", function(event, d) {
-        triggerMemberProfile(d);
+    function updateTree(source, duration) {
+      duration = duration !== undefined ? duration : 400;
+      treeLayout(d3Root);
+
+      var nodes = d3Root.descendants();
+      var links = d3Root.links();
+
+      // --- Links ---
+      var link = gLink.selectAll(".d3-tree-link")
+        .data(links, function(d) { return d.target.data.id; });
+
+      var linkEnter = link.enter().append("path")
+        .attr("class", function(d) {
+          return "d3-tree-link branch-" + (d.target.data.branch || "heritage");
+        })
+        .attr("fill", "none")
+        .attr("stroke", function(d) {
+          return getBranchColor(d.target.data.branch).stroke;
+        })
+        .attr("stroke-width", "2.2px")
+        .attr("stroke-opacity", "0.75")
+        .attr("d", function() {
+          var o = { x: source.x0 || 0, y: source.y0 || 0 };
+          return elbowConnector(o, o);
+        });
+
+      link.merge(linkEnter).transition().duration(duration)
+        .attr("d", function(d) { return elbowConnector(d.source, d.target); })
+        .attr("stroke", function(d) { return getBranchColor(d.target.data.branch).stroke; });
+
+      link.exit().transition().duration(duration)
+        .attr("d", function() {
+          var o = { x: source.x || 0, y: source.y || 0 };
+          return elbowConnector(o, o);
+        })
+        .remove();
+
+      // --- Nodes ---
+      var node = gNode.selectAll(".d3-node-group")
+        .data(nodes, function(d) { return d.data.id; });
+
+      var nodeEnter = node.enter().append("g")
+        .attr("class", function(d) {
+          return "d3-node-group branch-" + (d.data.branch || "heritage");
+        })
+        .attr("id", function(d) { return "d3Node_" + d.data.id; })
+        .attr("transform", function() {
+          return "translate(" + (source.x0 || 0) + "," + (source.y0 || 0) + ")";
+        })
+        .style("cursor", "pointer")
+        .on("click", function(event, d) {
+          if (event.target && event.target.closest && event.target.closest(".d3-node-toggle-btn")) {
+            toggleSubtree(d);
+            updateTree(d, 400);
+            return;
+          }
+          triggerMemberProfile(d);
+        });
+
+      buildClassicalCard(nodeEnter, defs, {
+        width: nodeWidth,
+        height: nodeHeight,
+        rx: rx,
+        ry: ry,
+        togglePosition: "bottom",
+        clipPrefix: "sq",
+        hasSquareHeaderStrip: true
       });
 
-    // Outer card border
-    nodes.append("rect")
-      .attr("width", nodeWidth)
-      .attr("height", nodeHeight)
-      .attr("rx", 6)
-      .attr("ry", 6)
-      .attr("fill", "#ffffff")
-      .attr("stroke", "#334155")
-      .attr("stroke-width", 1.5)
-      .style("filter", "drop-shadow(0 2px 5px rgba(0,0,0,0.06))");
+      var nodeUpdate = node.merge(nodeEnter).transition().duration(duration)
+        .attr("transform", function(d) {
+          return "translate(" + d.x + "," + d.y + ")";
+        });
 
-    // Header strip for branch identification
-    nodes.append("rect")
-      .attr("width", nodeWidth)
-      .attr("height", 20)
-      .attr("rx", 6)
-      .attr("ry", 6)
-      .attr("fill", function(d) { return getBranchColor(d.data.branch).css; });
+      nodeUpdate.select(".d3-node-card-bg")
+        .attr("stroke", function(d) {
+          if (d.selected) return "var(--gold)";
+          return getCardData(d).branch.stroke;
+        });
 
-    // Header label
-    nodes.append("text")
-      .attr("x", 8)
-      .attr("y", 14)
-      .attr("fill", "#ffffff")
-      .style("font-size", "10px")
-      .style("font-weight", "800")
-      .text(function(d) {
-        var b = getBranchColor(d.data.branch).label;
-        var gen = d.data.generation !== undefined ? " • Gen " + d.data.generation : "";
-        return b + gen;
+      nodeUpdate.select(".d3-node-toggle-btn text")
+        .text(function(d) {
+          return d._children ? "+" + (d._children.length || d.data.childrenCount) : (d.children ? "−" : "");
+        });
+
+      node.exit().transition().duration(duration)
+        .attr("transform", function() {
+          return "translate(" + (source.x || 0) + "," + (source.y || 0) + ")";
+        })
+        .remove();
+
+      d3Root.each(function(d) {
+        d.x0 = d.x;
+        d.y0 = d.y;
       });
+    }
 
-    // Round Member Picture / Placeholder inside square card
-    nodes.each(function(d) {
-      var nodeEl = d3.select(this);
-      var rec = d.data.record || {};
-      var photoUrl = rec.photo && String(rec.photo).trim();
-      var branch = getBranchColor(d.data.branch);
-      var avatarG = nodeEl.append("g").attr("transform", "translate(30, 52)");
-
-      if (photoUrl) {
-        var clipId = "clip_sq_" + d.data.id.replace(/[^a-zA-Z0-9_-]/g, "_");
-        defs.append("clipPath")
-          .attr("id", clipId)
-          .append("circle")
-          .attr("cx", 0)
-          .attr("cy", 0)
-          .attr("r", 20);
-
-        avatarG.append("image")
-          .attr("href", photoUrl)
-          .attr("x", -20)
-          .attr("y", -20)
-          .attr("width", 40)
-          .attr("height", 40)
-          .attr("preserveAspectRatio", "xMidYMid slice")
-          .attr("clip-path", "url(#" + clipId + ")");
-
-        avatarG.append("circle")
-          .attr("r", 20)
-          .attr("fill", "none")
-          .attr("stroke", branch.css)
-          .attr("stroke-width", 2);
-      } else {
-        avatarG.append("circle")
-          .attr("r", 20)
-          .attr("fill", branch.bg)
-          .attr("stroke", branch.css)
-          .attr("stroke-width", 1.5)
-          .attr("stroke-dasharray", "3,2");
-
-        var n = d.data.name || "";
-        var parts = n.split(" ").filter(Boolean);
-        var initialsText = parts.length >= 2 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : (n[0] || "?").toUpperCase();
-
-        avatarG.append("text")
-          .attr("text-anchor", "middle")
-          .attr("dy", "0.35em")
-          .attr("fill", branch.css)
-          .style("font-size", "10px")
-          .style("font-weight", "900")
-          .text(initialsText);
-
-        var badgeG = avatarG.append("g").attr("transform", "translate(13, 13)");
-        badgeG.append("circle")
-          .attr("r", 5.5)
-          .attr("fill", "#ffffff")
-          .attr("stroke", branch.css)
-          .attr("stroke-width", 1);
-        badgeG.append("text")
-          .attr("text-anchor", "middle")
-          .attr("dy", "0.35em")
-          .style("font-size", "6px")
-          .text("📷");
-      }
-    });
-
-    // Member Name
-    nodes.append("text")
-      .attr("x", 58)
-      .attr("y", 46)
-      .attr("fill", "#0f172a")
-      .style("font-size", "12px")
-      .style("font-weight", "800")
-      .text(function(d) {
-        var n = d.data.name || "";
-        return n.length > 18 ? n.slice(0, 16) + "…" : n;
-      });
-
-    // Clan ID / Dates
-    nodes.append("text")
-      .attr("x", 58)
-      .attr("y", 64)
-      .attr("fill", "#64748b")
-      .style("font-size", "10px")
-      .style("font-weight", "600")
-      .text(function(d) {
-        return d.data.clanNumber ? "ID: " + d.data.clanNumber : "Member";
-      });
+    updateTree(d3Root, 0);
 
     setTimeout(function() {
       if (typeof window.fitTreeToWidth === "function") window.fitTreeToWidth();
-    }, 50);
+    }, 60);
   };
 
   // =========================================================================
@@ -594,10 +897,7 @@
       return;
     }
 
-    var hierarchyData = (typeof window.buildD3HierarchyData === "function")
-      ? window.buildD3HierarchyData(rootRecord, filterBranch)
-      : null;
-
+    var hierarchyData = getTreeHierarchyData(rootRecord, filterBranch);
     if (!hierarchyData) {
       container.innerHTML = '<div class="empty">No genealogical records found for the selected branch.</div>';
       return;
@@ -607,29 +907,36 @@
       .attr("class", "d3-tree-container")
       .attr("id", "d3TreeWrapper")
       .style("width", "100%")
-      .style("height", "680px")
+      .style("height", "100%")
+      .style("min-height", "680px")
       .style("position", "relative")
       .style("overflow", "hidden")
       .style("background", "#ffffff");
 
-    var d3Root = d3.hierarchy(hierarchyData);
-    var nodeWidth = 175;
-    var nodeHeight = 50;
+    var d3Root = d3.hierarchy(hierarchyData, function(d) { return d.children; });
+    window.d3TreeDataRoot = d3Root;
+    var nodeWidth = 270;
+    var nodeHeight = 94;
+    var rx = 8;
+    var ry = 8;
 
-    var treeLayout = d3.tree().nodeSize([nodeWidth + 24, nodeHeight + 48]);
-    treeLayout(d3Root);
+    d3Root.x0 = (container.clientWidth || 1000) / 2;
+    d3Root.y0 = 60;
+
+    var treeLayout = d3.tree().nodeSize([nodeWidth + 24, nodeHeight + 60]);
 
     var svg = wrapper.append("svg")
+      .attr("class", "d3-tree-svg")
+      .attr("id", "d3TreeSvg")
       .attr("width", "100%")
       .attr("height", "100%")
       .style("display", "block")
       .style("cursor", "grab");
 
     var defs = svg.append("defs");
-
-    var g = svg.append("g");
-    var gLink = g.append("g").attr("class", "links-layer");
-    var gNode = g.append("g").attr("class", "nodes-layer");
+    var g = svg.append("g").attr("class", "d3-main-group");
+    var gLink = g.append("g").attr("class", "d3-links-layer");
+    var gNode = g.append("g").attr("class", "d3-nodes-layer");
 
     var zoom = d3.zoom()
       .scaleExtent([0.15, 3])
@@ -645,132 +952,115 @@
     window._treeD3Svg = svg;
 
     createTreeSearchPanel(wrapper, d3Root, function(matchNode) {
-      d3.selectAll(".classical-node").classed("node-selected", false);
-      var sel = d3.select("#node_compact_" + matchNode.data.id);
+      d3.selectAll(".d3-node-group").classed("node-selected", false);
+      var sel = d3.select("#d3Node_" + matchNode.data.id);
       sel.classed("node-selected", true);
-      var scale = 1.2;
+      var scale = 1.1;
       var w = container.clientWidth || 900;
       svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity.translate(w/2 - matchNode.x * scale, 120 - matchNode.y * scale).scale(scale));
     }, rootRecord);
 
-    // Crisp connector lines
-    gLink.selectAll("path")
-      .data(d3Root.links())
-      .enter()
-      .append("path")
-      .attr("d", d3.linkVertical()
-        .x(function(d) { return d.x; })
-        .y(function(d) { return d.y; })
-      )
-      .attr("fill", "none")
-      .attr("stroke", "#94a3b8")
-      .attr("stroke-width", 1.5);
+    function updateTree(source, duration) {
+      duration = duration !== undefined ? duration : 400;
+      treeLayout(d3Root);
 
-    // Nodes (Condensed cards)
-    var nodes = gNode.selectAll(".classical-node")
-      .data(d3Root.descendants())
-      .enter()
-      .append("g")
-      .attr("class", "classical-node")
-      .attr("id", function(d) { return "node_compact_" + d.data.id; })
-      .attr("transform", function(d) { return "translate(" + (d.x - nodeWidth / 2) + "," + (d.y - nodeHeight / 2) + ")"; })
-      .style("cursor", "pointer")
-      .on("click", function(event, d) {
-        triggerMemberProfile(d);
+      var nodes = d3Root.descendants();
+      var links = d3Root.links();
+
+      // --- Links ---
+      var link = gLink.selectAll(".d3-tree-link")
+        .data(links, function(d) { return d.target.data.id; });
+
+      var linkEnter = link.enter().append("path")
+        .attr("class", function(d) {
+          return "d3-tree-link branch-" + (d.target.data.branch || "heritage");
+        })
+        .attr("fill", "none")
+        .attr("stroke", function(d) {
+          return getBranchColor(d.target.data.branch).stroke;
+        })
+        .attr("stroke-width", "2px")
+        .attr("stroke-opacity", "0.7")
+        .attr("d", function() {
+          var o = { x: source.x0 || 0, y: source.y0 || 0 };
+          return d3.linkVertical()({ source: o, target: o });
+        });
+
+      link.merge(linkEnter).transition().duration(duration)
+        .attr("d", d3.linkVertical().x(function(d) { return d.x; }).y(function(d) { return d.y; }))
+        .attr("stroke", function(d) { return getBranchColor(d.target.data.branch).stroke; });
+
+      link.exit().transition().duration(duration)
+        .attr("d", function() {
+          var o = { x: source.x || 0, y: source.y || 0 };
+          return d3.linkVertical()({ source: o, target: o });
+        })
+        .remove();
+
+      // --- Nodes ---
+      var node = gNode.selectAll(".d3-node-group")
+        .data(nodes, function(d) { return d.data.id; });
+
+      var nodeEnter = node.enter().append("g")
+        .attr("class", function(d) {
+          return "d3-node-group branch-" + (d.data.branch || "heritage");
+        })
+        .attr("id", function(d) { return "d3Node_" + d.data.id; })
+        .attr("transform", function() {
+          return "translate(" + (source.x0 || 0) + "," + (source.y0 || 0) + ")";
+        })
+        .style("cursor", "pointer")
+        .on("click", function(event, d) {
+          if (event.target && event.target.closest && event.target.closest(".d3-node-toggle-btn")) {
+            toggleSubtree(d);
+            updateTree(d, 400);
+            return;
+          }
+          triggerMemberProfile(d);
+        });
+
+      buildClassicalCard(nodeEnter, defs, {
+        width: nodeWidth,
+        height: nodeHeight,
+        rx: rx,
+        ry: ry,
+        togglePosition: "bottom",
+        clipPrefix: "cmp"
       });
 
-    // Card background
-    nodes.append("rect")
-      .attr("width", nodeWidth)
-      .attr("height", nodeHeight)
-      .attr("rx", 6)
-      .attr("ry", 6)
-      .attr("fill", "#ffffff")
-      .attr("stroke", function(d) { return getBranchColor(d.data.branch).border; })
-      .attr("stroke-width", 1.5)
-      .style("filter", "drop-shadow(0 1px 3px rgba(0,0,0,0.05))");
+      var nodeUpdate = node.merge(nodeEnter).transition().duration(duration)
+        .attr("transform", function(d) {
+          return "translate(" + d.x + "," + d.y + ")";
+        });
 
-    // Round Picture / Placeholder in compact view
-    nodes.each(function(d) {
-      var nodeEl = d3.select(this);
-      var rec = d.data.record || {};
-      var photoUrl = rec.photo && String(rec.photo).trim();
-      var branch = getBranchColor(d.data.branch);
-      var avatarG = nodeEl.append("g").attr("transform", "translate(22, 25)");
+      nodeUpdate.select(".d3-node-card-bg")
+        .attr("stroke", function(d) {
+          if (d.selected) return "var(--gold)";
+          return getCardData(d).branch.stroke;
+        });
 
-      if (photoUrl) {
-        var clipId = "clip_cmp_" + d.data.id.replace(/[^a-zA-Z0-9_-]/g, "_");
-        defs.append("clipPath")
-          .attr("id", clipId)
-          .append("circle")
-          .attr("cx", 0)
-          .attr("cy", 0)
-          .attr("r", 15);
+      nodeUpdate.select(".d3-node-toggle-btn text")
+        .text(function(d) {
+          return d._children ? "+" + (d._children.length || d.data.childrenCount) : (d.children ? "−" : "");
+        });
 
-        avatarG.append("image")
-          .attr("href", photoUrl)
-          .attr("x", -15)
-          .attr("y", -15)
-          .attr("width", 30)
-          .attr("height", 30)
-          .attr("preserveAspectRatio", "xMidYMid slice")
-          .attr("clip-path", "url(#" + clipId + ")");
+      node.exit().transition().duration(duration)
+        .attr("transform", function() {
+          return "translate(" + (source.x || 0) + "," + (source.y || 0) + ")";
+        })
+        .remove();
 
-        avatarG.append("circle")
-          .attr("r", 15)
-          .attr("fill", "none")
-          .attr("stroke", branch.css)
-          .attr("stroke-width", 1.5);
-      } else {
-        avatarG.append("circle")
-          .attr("r", 15)
-          .attr("fill", branch.bg)
-          .attr("stroke", branch.css)
-          .attr("stroke-width", 1.5)
-          .attr("stroke-dasharray", "2,2");
-
-        var n = d.data.name || "";
-        var parts = n.split(" ").filter(Boolean);
-        var initialsText = parts.length >= 2 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : (n[0] || "?").toUpperCase();
-
-        avatarG.append("text")
-          .attr("text-anchor", "middle")
-          .attr("dy", "0.35em")
-          .attr("fill", branch.css)
-          .style("font-size", "9px")
-          .style("font-weight", "900")
-          .text(initialsText);
-      }
-    });
-
-    // Name text
-    nodes.append("text")
-      .attr("x", 44)
-      .attr("y", 22)
-      .attr("fill", "#1e293b")
-      .style("font-size", "11px")
-      .style("font-weight", "800")
-      .text(function(d) {
-        var n = d.data.name || "";
-        return n.length > 17 ? n.slice(0, 15) + "…" : n;
+      d3Root.each(function(d) {
+        d.x0 = d.x;
+        d.y0 = d.y;
       });
+    }
 
-    // Subtitle
-    nodes.append("text")
-      .attr("x", 44)
-      .attr("y", 37)
-      .attr("fill", "#64748b")
-      .style("font-size", "9px")
-      .style("font-weight", "600")
-      .text(function(d) {
-        var gen = d.data.generation !== undefined ? "G" + d.data.generation : "";
-        var id = d.data.clanNumber ? " • " + d.data.clanNumber : "";
-        return gen + id;
-      });
+    updateTree(d3Root, 0);
 
     setTimeout(function() {
       if (typeof window.fitTreeToWidth === "function") window.fitTreeToWidth();
-    }, 50);
+    }, 60);
   };
 
   // =========================================================================
@@ -786,10 +1076,7 @@
       return;
     }
 
-    var hierarchyData = (typeof window.buildD3HierarchyData === "function")
-      ? window.buildD3HierarchyData(rootRecord, filterBranch)
-      : null;
-
+    var hierarchyData = getTreeHierarchyData(rootRecord, filterBranch);
     if (!hierarchyData) {
       container.innerHTML = '<div class="empty">No genealogical records found for the selected branch.</div>';
       return;
@@ -799,29 +1086,36 @@
       .attr("class", "d3-tree-container")
       .attr("id", "d3TreeWrapper")
       .style("width", "100%")
-      .style("height", "680px")
+      .style("height", "100%")
+      .style("min-height", "680px")
       .style("position", "relative")
       .style("overflow", "hidden")
       .style("background", "linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%)");
 
-    var d3Root = d3.hierarchy(hierarchyData);
-    var nodeWidth = 230;
-    var nodeHeight = 64;
+    var d3Root = d3.hierarchy(hierarchyData, function(d) { return d.children; });
+    window.d3TreeDataRoot = d3Root;
+    var nodeWidth = 280;
+    var nodeHeight = 96;
+    var rx = 10;
+    var ry = 10;
+
+    d3Root.x0 = (container.clientHeight || 650) / 2;
+    d3Root.y0 = 60;
 
     var treeLayout = d3.tree().nodeSize([nodeHeight + 36, nodeWidth + 90]);
-    treeLayout(d3Root);
 
     var svg = wrapper.append("svg")
+      .attr("class", "d3-tree-svg")
+      .attr("id", "d3TreeSvg")
       .attr("width", "100%")
       .attr("height", "100%")
       .style("display", "block")
       .style("cursor", "grab");
 
     var defs = svg.append("defs");
-
-    var g = svg.append("g");
-    var gLink = g.append("g").attr("class", "links-layer");
-    var gNode = g.append("g").attr("class", "nodes-layer");
+    var g = svg.append("g").attr("class", "d3-main-group");
+    var gLink = g.append("g").attr("class", "d3-links-layer");
+    var gNode = g.append("g").attr("class", "d3-nodes-layer");
 
     var zoom = d3.zoom()
       .scaleExtent([0.15, 3])
@@ -837,157 +1131,119 @@
     window._treeD3Svg = svg;
 
     createTreeSearchPanel(wrapper, d3Root, function(matchNode) {
-      d3.selectAll(".classical-node").classed("node-selected", false);
-      var sel = d3.select("#node_ltr_" + matchNode.data.id);
+      d3.selectAll(".d3-node-group").classed("node-selected", false);
+      var sel = d3.select("#d3Node_" + matchNode.data.id);
       sel.classed("node-selected", true);
       var scale = 1.1;
-      var h = 680;
+      var h = container.clientHeight || 680;
       svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity.translate(140 - matchNode.y * scale, h/2 - matchNode.x * scale).scale(scale));
     }, rootRecord);
 
-    // Horizontal cubic bezier curves connecting parent right edge to child left edge
-    gLink.selectAll("path")
-      .data(d3Root.links())
-      .enter()
-      .append("path")
-      .attr("d", d3.linkHorizontal()
-        .x(function(d) { return d.y; })
-        .y(function(d) { return d.x; })
-      )
-      .attr("fill", "none")
-      .attr("stroke", function(d) { return getBranchColor(d.target.data.branch).css; })
-      .attr("stroke-width", 2)
-      .attr("stroke-opacity", 0.65);
+    function updateTree(source, duration) {
+      duration = duration !== undefined ? duration : 400;
+      treeLayout(d3Root);
 
-    // Nodes (Cards positioned at y, x)
-    var nodes = gNode.selectAll(".classical-node")
-      .data(d3Root.descendants())
-      .enter()
-      .append("g")
-      .attr("class", "classical-node")
-      .attr("id", function(d) { return "node_ltr_" + d.data.id; })
-      .attr("transform", function(d) { return "translate(" + (d.y - nodeWidth / 2) + "," + (d.x - nodeHeight / 2) + ")"; })
-      .style("cursor", "pointer")
-      .on("click", function(event, d) {
-        triggerMemberProfile(d);
+      var nodes = d3Root.descendants();
+      var links = d3Root.links();
+
+      // --- Links ---
+      var link = gLink.selectAll(".d3-tree-link")
+        .data(links, function(d) { return d.target.data.id; });
+
+      var linkEnter = link.enter().append("path")
+        .attr("class", function(d) {
+          return "d3-tree-link branch-" + (d.target.data.branch || "heritage");
+        })
+        .attr("fill", "none")
+        .attr("stroke", function(d) {
+          return getBranchColor(d.target.data.branch).stroke;
+        })
+        .attr("stroke-width", "2.5px")
+        .attr("stroke-opacity", "0.75")
+        .attr("d", function() {
+          var o = { x: source.x0 || 0, y: source.y0 || 0 };
+          return d3.linkHorizontal().x(function(d) { return d.y; }).y(function(d) { return d.x; })({ source: o, target: o });
+        });
+
+      link.merge(linkEnter).transition().duration(duration)
+        .attr("d", d3.linkHorizontal().x(function(d) { return d.y; }).y(function(d) { return d.x; }))
+        .attr("stroke", function(d) { return getBranchColor(d.target.data.branch).stroke; });
+
+      link.exit().transition().duration(duration)
+        .attr("d", function() {
+          var o = { x: source.x || 0, y: source.y || 0 };
+          return d3.linkHorizontal().x(function(d) { return d.y; }).y(function(d) { return d.x; })({ source: o, target: o });
+        })
+        .remove();
+
+      // --- Nodes ---
+      var node = gNode.selectAll(".d3-node-group")
+        .data(nodes, function(d) { return d.data.id; });
+
+      var nodeEnter = node.enter().append("g")
+        .attr("class", function(d) {
+          return "d3-node-group branch-" + (d.data.branch || "heritage");
+        })
+        .attr("id", function(d) { return "d3Node_" + d.data.id; })
+        .attr("transform", function() {
+          return "translate(" + (source.y0 || 0) + "," + (source.x0 || 0) + ")";
+        })
+        .style("cursor", "pointer")
+        .on("click", function(event, d) {
+          if (event.target && event.target.closest && event.target.closest(".d3-node-toggle-btn")) {
+            toggleSubtree(d);
+            updateTree(d, 400);
+            return;
+          }
+          triggerMemberProfile(d);
+        });
+
+      buildClassicalCard(nodeEnter, defs, {
+        width: nodeWidth,
+        height: nodeHeight,
+        rx: rx,
+        ry: ry,
+        togglePosition: "right",
+        clipPrefix: "ltr"
       });
 
-    // Card background
-    nodes.append("rect")
-      .attr("width", nodeWidth)
-      .attr("height", nodeHeight)
-      .attr("rx", 10)
-      .attr("ry", 10)
-      .attr("fill", "#ffffff")
-      .attr("stroke", "#cbd5e1")
-      .attr("stroke-width", 1.5)
-      .style("filter", "drop-shadow(0 2px 6px rgba(0,0,0,0.06))");
+      var nodeUpdate = node.merge(nodeEnter).transition().duration(duration)
+        .attr("transform", function(d) {
+          return "translate(" + d.y + "," + d.x + ")";
+        });
 
-    // Left accent stripe
-    nodes.append("rect")
-      .attr("width", 6)
-      .attr("height", nodeHeight)
-      .attr("rx", 3)
-      .attr("ry", 3)
-      .attr("fill", function(d) { return getBranchColor(d.data.branch).css; });
+      nodeUpdate.select(".d3-node-card-bg")
+        .attr("stroke", function(d) {
+          if (d.selected) return "var(--gold)";
+          return getCardData(d).branch.stroke;
+        });
 
-    // Round Member Picture / Placeholder
-    nodes.each(function(d) {
-      var nodeEl = d3.select(this);
-      var rec = d.data.record || {};
-      var photoUrl = rec.photo && String(rec.photo).trim();
-      var branch = getBranchColor(d.data.branch);
-      var avatarG = nodeEl.append("g").attr("transform", "translate(32, 32)");
+      nodeUpdate.select(".d3-node-toggle-btn text")
+        .text(function(d) {
+          return d._children ? "+" + (d._children.length || d.data.childrenCount) : (d.children ? "−" : "");
+        });
 
-      if (photoUrl) {
-        var clipId = "clip_ltr_" + d.data.id.replace(/[^a-zA-Z0-9_-]/g, "_");
-        defs.append("clipPath")
-          .attr("id", clipId)
-          .append("circle")
-          .attr("cx", 0)
-          .attr("cy", 0)
-          .attr("r", 20);
+      node.exit().transition().duration(duration)
+        .attr("transform", function() {
+          return "translate(" + (source.y || 0) + "," + (source.x || 0) + ")";
+        })
+        .remove();
 
-        avatarG.append("image")
-          .attr("href", photoUrl)
-          .attr("x", -20)
-          .attr("y", -20)
-          .attr("width", 40)
-          .attr("height", 40)
-          .attr("preserveAspectRatio", "xMidYMid slice")
-          .attr("clip-path", "url(#" + clipId + ")");
-
-        avatarG.append("circle")
-          .attr("r", 20)
-          .attr("fill", "none")
-          .attr("stroke", branch.css)
-          .attr("stroke-width", 2);
-      } else {
-        avatarG.append("circle")
-          .attr("r", 20)
-          .attr("fill", branch.bg)
-          .attr("stroke", branch.css)
-          .attr("stroke-width", 1.8)
-          .attr("stroke-dasharray", "3,2");
-
-        var n = d.data.name || "";
-        var parts = n.split(" ").filter(Boolean);
-        var initialsText = parts.length >= 2 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : (n[0] || "?").toUpperCase();
-
-        avatarG.append("text")
-          .attr("text-anchor", "middle")
-          .attr("dy", "0.35em")
-          .attr("fill", branch.css)
-          .style("font-size", "10px")
-          .style("font-weight", "900")
-          .text(initialsText);
-
-        var badgeG = avatarG.append("g").attr("transform", "translate(13, 13)");
-        badgeG.append("circle")
-          .attr("r", 5.5)
-          .attr("fill", "#ffffff")
-          .attr("stroke", branch.css)
-          .attr("stroke-width", 1);
-        badgeG.append("text")
-          .attr("text-anchor", "middle")
-          .attr("dy", "0.35em")
-          .style("font-size", "6px")
-          .text("📷");
-      }
-    });
-
-    // Name text
-    nodes.append("text")
-      .attr("x", 60)
-      .attr("y", 26)
-      .attr("fill", "#0f172a")
-      .style("font-size", "12px")
-      .style("font-weight", "800")
-      .text(function(d) {
-        var n = d.data.name || "";
-        return n.length > 18 ? n.slice(0, 16) + "…" : n;
+      d3Root.each(function(d) {
+        d.x0 = d.x;
+        d.y0 = d.y;
       });
+    }
 
-    // Generation and Clan ID
-    nodes.append("text")
-      .attr("x", 60)
-      .attr("y", 46)
-      .attr("fill", "#64748b")
-      .style("font-size", "10px")
-      .style("font-weight", "600")
-      .text(function(d) {
-        var gen = d.data.generation !== undefined ? "Gen " + d.data.generation : "";
-        var id = d.data.clanNumber ? " • " + d.data.clanNumber : "";
-        return gen + id;
-      });
+    updateTree(d3Root, 0);
 
     setTimeout(function() {
       if (typeof window.fitTreeToWidth === "function") window.fitTreeToWidth();
-    }, 50);
+    }, 60);
   };
 
   // =========================================================================
-  // 6. RADIAL CLASSICAL TREE (Concentric Radiating Generational Rings with Non-Intermingling Spread)
+  // 6. RADIAL CLASSICAL TREE (Concentric Radiating Generational Rings)
   // =========================================================================
   window.renderClassicalRadialTree = function(rootRecord, filterBranch, targetHighlightId) {
     cleanupTreeCanvas();
@@ -999,40 +1255,44 @@
       return;
     }
 
-    var hierarchyData = (typeof window.buildD3HierarchyData === "function")
-      ? window.buildD3HierarchyData(rootRecord, filterBranch)
-      : null;
-
+    var hierarchyData = getTreeHierarchyData(rootRecord, filterBranch);
     if (!hierarchyData) {
       container.innerHTML = '<div class="empty">No genealogical records found for the selected branch.</div>';
       return;
     }
 
-    var d3Root = d3.hierarchy(hierarchyData);
+    var d3Root = d3.hierarchy(hierarchyData, function(d) { return d.children; });
+    window.d3TreeDataRoot = d3Root;
 
     // Calculate maximum generational depth
     var maxDepth = 1;
     d3Root.each(function(d) { if (d.depth > maxDepth) maxDepth = d.depth; });
 
-    // Radial Step per level: Generous 160px - 220px per level so nodes and names spread naturally
-    var radialStep = Math.max(160, Math.min(230, 950 / Math.max(1, maxDepth)));
+    // Generous radial step per level so cards spread naturally without overlapping
+    var radialStep = Math.max(190, Math.min(260, 1200 / Math.max(1, maxDepth)));
     var totalRadius = radialStep * maxDepth;
 
-    // Angle separation algorithm ensuring siblings & non-siblings have ample radial gap without name collision
+    var nodeWidth = 260;
+    var nodeHeight = 92;
+    var rx = 12;
+    var ry = 12;
+
+    d3Root.x0 = 0;
+    d3Root.y0 = 0;
+
     var treeLayout = d3.tree()
       .size([2 * Math.PI, totalRadius])
       .separation(function(a, b) {
-        var baseSep = (a.parent === b.parent ? 2.5 : 5.0);
+        var baseSep = (a.parent === b.parent ? 3.4 : 6.2);
         return baseSep / Math.max(1, Math.sqrt(a.depth));
       });
-
-    treeLayout(d3Root);
 
     var wrapper = d3.select(container).append("div")
       .attr("class", "d3-tree-container")
       .attr("id", "d3TreeWrapper")
       .style("width", "100%")
-      .style("height", "720px")
+      .style("height", "100%")
+      .style("min-height", "720px")
       .style("position", "relative")
       .style("overflow", "hidden")
       .style("background", "radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%)");
@@ -1041,15 +1301,21 @@
     var height = 720;
 
     var svg = wrapper.append("svg")
+      .attr("class", "d3-tree-svg")
+      .attr("id", "d3TreeSvg")
       .attr("width", "100%")
       .attr("height", "100%")
       .style("display", "block")
       .style("cursor", "grab");
 
     var defs = svg.append("defs");
-
     var g = svg.append("g")
+      .attr("class", "d3-main-group")
       .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
+
+    var guideGroup = g.append("g").attr("class", "radial-guide-rings");
+    var gLink = g.append("g").attr("class", "d3-links-layer");
+    var gNode = g.append("g").attr("class", "d3-nodes-layer");
 
     var zoom = d3.zoom()
       .scaleExtent([0.1, 4])
@@ -1061,7 +1327,7 @@
 
     svg.call(zoom);
 
-    // Center and scale to show full radial spread comfortably
+    // Initial scale & center
     var initialScale = Math.min(0.85, (Math.min(width, height) - 60) / (totalRadius * 2));
     if (isNaN(initialScale) || initialScale <= 0) initialScale = 0.55;
     svg.call(zoom.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(initialScale));
@@ -1071,165 +1337,140 @@
     window._treeD3Svg = svg;
 
     createTreeSearchPanel(wrapper, d3Root, function(matchNode) {
-      d3.selectAll(".classical-node").classed("node-selected", false);
-      var sel = d3.select("#node_radial_" + matchNode.data.id);
+      d3.selectAll(".d3-node-group").classed("node-selected", false);
+      var sel = d3.select("#d3Node_" + matchNode.data.id);
       sel.classed("node-selected", true);
-      var scale = 1.2;
+      var scale = 1.1;
       var point = d3.pointRadial(matchNode.x, matchNode.y);
       svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity.translate(width/2 - point[0] * scale, height/2 - point[1] * scale).scale(scale));
     }, rootRecord);
 
-    // Generational guide rings with labels
-    var guideGroup = g.append("g").attr("class", "radial-guide-rings");
-    for (var r = 1; r <= maxDepth; r++) {
-      var ringRadius = radialStep * r;
-      guideGroup.append("circle")
-        .attr("r", ringRadius)
-        .attr("fill", "none")
-        .attr("stroke", "#cbd5e1")
-        .attr("stroke-dasharray", "4,4")
-        .attr("stroke-width", 1.2);
+    function updateTree(source, duration) {
+      duration = duration !== undefined ? duration : 400;
+      treeLayout(d3Root);
 
-      guideGroup.append("text")
-        .attr("y", -ringRadius + 14)
-        .attr("x", 0)
-        .attr("text-anchor", "middle")
-        .attr("fill", "#64748b")
-        .style("font-size", "10px")
-        .style("font-weight", "800")
-        .text("Gen " + r);
+      var nodes = d3Root.descendants();
+      var links = d3Root.links();
+
+      // Generational guide rings
+      guideGroup.selectAll("*").remove();
+      for (var r = 1; r <= maxDepth; r++) {
+        var ringRadius = radialStep * r;
+        guideGroup.append("circle")
+          .attr("r", ringRadius)
+          .attr("fill", "none")
+          .attr("stroke", "#cbd5e1")
+          .attr("stroke-dasharray", "4,4")
+          .attr("stroke-width", 1.2);
+
+        guideGroup.append("text")
+          .attr("y", -ringRadius + 14)
+          .attr("x", 0)
+          .attr("text-anchor", "middle")
+          .attr("fill", "#64748b")
+          .style("font-size", "10px")
+          .style("font-weight", "800")
+          .text("Gen " + r);
+      }
+
+      // --- Links ---
+      var link = gLink.selectAll(".d3-tree-link")
+        .data(links, function(d) { return d.target.data.id; });
+
+      var linkEnter = link.enter().append("path")
+        .attr("class", function(d) {
+          return "d3-tree-link branch-" + (d.target.data.branch || "heritage");
+        })
+        .attr("fill", "none")
+        .attr("stroke", function(d) {
+          return getBranchColor(d.target.data.branch).stroke;
+        })
+        .attr("stroke-width", "2.2px")
+        .attr("stroke-opacity", "0.65")
+        .attr("d", function() {
+          var o = { x: source.x0 || 0, y: source.y0 || 0 };
+          return d3.linkRadial().angle(function(d) { return d.x; }).radius(function(d) { return d.y; })({ source: o, target: o });
+        });
+
+      link.merge(linkEnter).transition().duration(duration)
+        .attr("d", d3.linkRadial().angle(function(d) { return d.x; }).radius(function(d) { return d.y; }))
+        .attr("stroke", function(d) { return getBranchColor(d.target.data.branch).stroke; });
+
+      link.exit().transition().duration(duration)
+        .attr("d", function() {
+          var o = { x: source.x || 0, y: source.y || 0 };
+          return d3.linkRadial().angle(function(d) { return d.x; }).radius(function(d) { return d.y; })({ source: o, target: o });
+        })
+        .remove();
+
+      // --- Nodes ---
+      var node = gNode.selectAll(".d3-node-group")
+        .data(nodes, function(d) { return d.data.id; });
+
+      var nodeEnter = node.enter().append("g")
+        .attr("class", function(d) {
+          return "d3-node-group branch-" + (d.data.branch || "heritage");
+        })
+        .attr("id", function(d) { return "d3Node_" + d.data.id; })
+        .attr("transform", function() {
+          var pt = d3.pointRadial(source.x0 || 0, source.y0 || 0);
+          return "translate(" + pt[0] + "," + pt[1] + ")";
+        })
+        .style("cursor", "pointer")
+        .on("click", function(event, d) {
+          if (event.target && event.target.closest && event.target.closest(".d3-node-toggle-btn")) {
+            toggleSubtree(d);
+            updateTree(d, 400);
+            return;
+          }
+          triggerMemberProfile(d);
+        });
+
+      // Cards in radial tree are rendered upright for 100% horizontal readability
+      buildClassicalCard(nodeEnter, defs, {
+        width: nodeWidth,
+        height: nodeHeight,
+        rx: rx,
+        ry: ry,
+        togglePosition: "bottom",
+        clipPrefix: "rad"
+      });
+
+      var nodeUpdate = node.merge(nodeEnter).transition().duration(duration)
+        .attr("transform", function(d) {
+          var pt = d3.pointRadial(d.x, d.y);
+          return "translate(" + pt[0] + "," + pt[1] + ")";
+        });
+
+      nodeUpdate.select(".d3-node-card-bg")
+        .attr("stroke", function(d) {
+          if (d.selected) return "var(--gold)";
+          return getCardData(d).branch.stroke;
+        });
+
+      nodeUpdate.select(".d3-node-toggle-btn text")
+        .text(function(d) {
+          return d._children ? "+" + (d._children.length || d.data.childrenCount) : (d.children ? "−" : "");
+        });
+
+      node.exit().transition().duration(duration)
+        .attr("transform", function() {
+          var pt = d3.pointRadial(source.x || 0, source.y || 0);
+          return "translate(" + pt[0] + "," + pt[1] + ")";
+        })
+        .remove();
+
+      d3Root.each(function(d) {
+        d.x0 = d.x;
+        d.y0 = d.y;
+      });
     }
 
-    // Radial Links
-    g.append("g")
-      .attr("class", "links-layer")
-      .selectAll("path")
-      .data(d3Root.links())
-      .enter()
-      .append("path")
-      .attr("d", d3.linkRadial()
-        .angle(function(d) { return d.x; })
-        .radius(function(d) { return d.y; })
-      )
-      .attr("fill", "none")
-      .attr("stroke", function(d) { return getBranchColor(d.target.data.branch).css; })
-      .attr("stroke-width", 2)
-      .attr("stroke-opacity", 0.6);
+    updateTree(d3Root, 0);
 
-    // Nodes
-    var nodes = g.append("g")
-      .attr("class", "nodes-layer")
-      .selectAll(".classical-node")
-      .data(d3Root.descendants())
-      .enter()
-      .append("g")
-      .attr("class", "classical-node")
-      .attr("id", function(d) { return "node_radial_" + d.data.id; })
-      .attr("transform", function(d) {
-        return "rotate(" + (d.x * 180 / Math.PI - 90) + ")translate(" + d.y + ",0)";
-      })
-      .style("cursor", "pointer")
-      .on("click", function(event, d) {
-        triggerMemberProfile(d);
-      });
-
-    // Round Member Picture / Empty Round Placeholder in Radial Tree
-    nodes.each(function(d) {
-      var nodeEl = d3.select(this);
-      var rec = d.data.record || {};
-      var photoUrl = rec.photo && String(rec.photo).trim();
-      var branch = getBranchColor(d.data.branch);
-      var radiusPx = d.depth === 0 ? 22 : 16;
-
-      if (photoUrl) {
-        // Member HAS picture -> Insert picture in round frame
-        var clipId = "clip_rad_" + d.data.id.replace(/[^a-zA-Z0-9_-]/g, "_");
-        defs.append("clipPath")
-          .attr("id", clipId)
-          .append("circle")
-          .attr("cx", 0)
-          .attr("cy", 0)
-          .attr("r", radiusPx);
-
-        nodeEl.append("image")
-          .attr("href", photoUrl)
-          .attr("x", -radiusPx)
-          .attr("y", -radiusPx)
-          .attr("width", radiusPx * 2)
-          .attr("height", radiusPx * 2)
-          .attr("preserveAspectRatio", "xMidYMid slice")
-          .attr("clip-path", "url(#" + clipId + ")");
-
-        nodeEl.append("circle")
-          .attr("r", radiusPx)
-          .attr("fill", "none")
-          .attr("stroke", branch.css)
-          .attr("stroke-width", 2.5);
-      } else {
-        // Member HAS NO picture -> Leave empty round placeholder ready to add photo later
-        nodeEl.append("circle")
-          .attr("r", radiusPx)
-          .attr("fill", "#ffffff")
-          .attr("stroke", branch.css)
-          .attr("stroke-width", 2)
-          .attr("stroke-dasharray", "3,2");
-
-        if (d.depth === 0) {
-          nodeEl.append("text")
-            .attr("text-anchor", "middle")
-            .attr("dy", "0.35em")
-            .style("font-size", "14px")
-            .text("👑");
-        } else {
-          var initialsText = "?";
-          if (rec.firstName || d.data.name) {
-            var parts = (rec.firstName ? (rec.firstName + " " + (rec.lastName || "")) : d.data.name).trim().split(" ");
-            initialsText = parts.length >= 2 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : (parts[0][0] || "?").toUpperCase();
-          }
-          nodeEl.append("text")
-            .attr("text-anchor", "middle")
-            .attr("dy", "0.35em")
-            .style("font-size", "10px")
-            .style("font-weight", "900")
-            .attr("fill", branch.css)
-            .text(initialsText);
-
-          // Camera icon badge indicating photo placeholder
-          var badgeG = nodeEl.append("g").attr("transform", "translate(" + (radiusPx * 0.65) + "," + (radiusPx * 0.65) + ")");
-          badgeG.append("circle")
-            .attr("r", 5.5)
-            .attr("fill", "#ffffff")
-            .attr("stroke", branch.css)
-            .attr("stroke-width", 1);
-          badgeG.append("text")
-            .attr("text-anchor", "middle")
-            .attr("dy", "0.35em")
-            .style("font-size", "6px")
-            .text("📷");
-        }
-      }
-    });
-
-    // Member text label radiating outward with anti-collision stroke halo & flip on left hemisphere
-    nodes.append("text")
-      .attr("dy", "0.35em")
-      .attr("x", function(d) {
-        var rPx = d.depth === 0 ? 22 : 16;
-        return d.x < Math.PI ? (rPx + 8) : -(rPx + 8);
-      })
-      .attr("text-anchor", function(d) { return d.x < Math.PI ? "start" : "end"; })
-      .attr("transform", function(d) { return d.x >= Math.PI ? "rotate(180)" : null; })
-      .attr("fill", "#0f172a")
-      .style("font-size", function(d) { return d.depth === 0 ? "13px" : "11px"; })
-      .style("font-weight", "800")
-      .style("paint-order", "stroke fill")
-      .style("stroke", "#ffffff")
-      .style("stroke-width", "4px")
-      .style("stroke-linejoin", "round")
-      .text(function(d) {
-        var n = d.data.name || "";
-        return n.length > 22 ? n.substring(0, 20) + "…" : n;
-      });
+    setTimeout(function() {
+      if (typeof window.fitTreeToWidth === "function") window.fitTreeToWidth();
+    }, 60);
   };
 
 })(window);
