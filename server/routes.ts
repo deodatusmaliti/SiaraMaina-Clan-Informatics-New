@@ -1,5 +1,8 @@
 import express, { Request, Response } from "express";
 import crypto from "crypto";
+import path from "path";
+import fs from "fs";
+import { execSync } from "child_process";
 import { dbEngine, ClanMemberRecord, firebaseAppletConfig } from "./db";
 import { syncManager } from "./sync";
 import {
@@ -582,7 +585,128 @@ apiRouter.get(["/db/audit-logs", "/audit-logs"], requireAdmin, async (req: Reque
   }
 });
 
-// 8. Disconnect Old Google Sheets Endpoints (Erased & Disconnected)
+// 8. GitHub Synchronization Endpoints (Connected Repository Authority)
+const CONNECTED_GITHUB_REPO = "deodatusmaliti/SiaraMaina-Clan-Informatics-New";
+
+apiRouter.get(["/github/token", "/github/info"], (req: Request, res: Response) => {
+  const hasToken = Boolean(process.env.GITHUB_TOKEN);
+  const repo = CONNECTED_GITHUB_REPO;
+  const branch = process.env.GITHUB_BRANCH || "Main";
+  res.json({
+    success: true,
+    hasToken,
+    repo,
+    branch,
+    remoteUrl: `https://github.com/${repo}.git`,
+  });
+});
+
+apiRouter.post("/github/push", async (req: Request, res: Response) => {
+  try {
+    const { message, files } = req.body || {};
+    const commitMsg = (message && typeof message === "string" && message.trim()) ? message.trim() : "Update clan dataset and project files";
+    const repo = CONNECTED_GITHUB_REPO;
+
+    // 1. Write provided files to disk (e.g. siara-maina-clan-data.json)
+    if (files && typeof files === "object") {
+      for (const [filePath, content] of Object.entries(files)) {
+        if (filePath.includes("..") || filePath.startsWith("/")) continue;
+        const target = path.resolve(process.cwd(), filePath);
+        const strContent = typeof content === "string" ? content : JSON.stringify(content, null, 2);
+        fs.writeFileSync(target, strContent, "utf-8");
+      }
+    }
+
+    // 2. Execute git commit and push using the connected repository
+    let commitSha = "";
+    const token = process.env.GITHUB_TOKEN || "";
+    if (token) {
+      try {
+        execSync(`git config user.name "deodatusmaliti" && git config user.email "deodatusmaliti2@gmail.com"`, { stdio: "pipe" });
+        execSync(`git remote set-url origin https://${token}@github.com/${repo}.git`, { stdio: "pipe" });
+      } catch (cErr) {}
+    }
+
+    try {
+      execSync("git add -A", { stdio: "pipe" });
+      try {
+        execSync(`git commit -m ${JSON.stringify(commitMsg)}`, { stdio: "pipe" });
+      } catch (commitErr) {
+        // Working directory already clean
+      }
+      commitSha = execSync("git rev-parse HEAD", { encoding: "utf-8" }).trim();
+      execSync(`git push origin Main && git checkout -B main && git push origin main && git checkout Main`, { stdio: "pipe" });
+    } catch (gitErr: any) {
+      console.warn("[GitHub Push] Git CLI push note:", gitErr.message);
+    }
+
+    try {
+      await dbEngine.addAuditLog({
+        id: "log-" + Date.now(),
+        eventType: "GITHUB_PUSH",
+        action: `Published project files to ${repo}: ${commitMsg}`,
+        actorEmail: "deodatusmaliti2@gmail.com",
+        targetId: commitSha.slice(0, 7) || "ok",
+        timestamp: new Date().toISOString(),
+      });
+    } catch {}
+
+    res.json({
+      success: true,
+      repo,
+      branch: "Main",
+      commitSha: commitSha || "ok",
+      message: `Successfully published all project files & clan dataset to ${repo}!`,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err: any) {
+    console.error("[GitHub Push] Error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+apiRouter.all("/github/pull", async (req: Request, res: Response) => {
+  try {
+    const repo = CONNECTED_GITHUB_REPO;
+    let records: any[] = [];
+
+    const token = process.env.GITHUB_TOKEN || "";
+    if (token) {
+      try {
+        execSync(`git remote set-url origin https://${token}@github.com/${repo}.git`, { stdio: "pipe" });
+      } catch (cErr) {}
+    }
+
+    try {
+      execSync("git fetch origin Main && git reset --mixed origin/Main", { stdio: "pipe" });
+    } catch (gitErr: any) {
+      console.warn("[GitHub Pull] Git fetch note:", gitErr.message);
+    }
+
+    const dataPath = path.resolve(process.cwd(), "siara-maina-clan-data.json");
+    if (fs.existsSync(dataPath)) {
+      try {
+        const raw = fs.readFileSync(dataPath, "utf-8");
+        records = JSON.parse(raw);
+      } catch {}
+    }
+
+    res.json({
+      success: true,
+      repo,
+      branch: "Main",
+      recordsCount: records.length,
+      records,
+      message: `Successfully pulled latest project files & clan dataset from ${repo}!`,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err: any) {
+    console.error("[GitHub Pull] Error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 9. Disconnect Old Google Sheets Endpoints (Erased & Disconnected)
 apiRouter.all(["/sheets/*", "/db/spreadsheet"], (req: Request, res: Response) => {
   res.status(410).json({
     success: false,

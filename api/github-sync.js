@@ -1,5 +1,5 @@
-const REPOSITORY = process.env.GITHUB_REPOSITORY || 'deodatusmaliti/SiaraMaina-Clan-Informatics';
-const BRANCH = process.env.GITHUB_BRANCH || 'main';
+const REPOSITORY = (process.env.GITHUB_REPOSITORY ? process.env.GITHUB_REPOSITORY.replace(/^https?:\/\/github\.com\//i, '').replace(/\.git$/i, '') : null) || 'deodatusmaliti/SiaraMaina-Clan-Informatics-New';
+const BRANCH = process.env.GITHUB_BRANCH || 'Main';
 const DATA_PATH = 'siara-maina-clan-data.json';
 const USERS_PATH = 'siara-maina-clan-users.json';
 
